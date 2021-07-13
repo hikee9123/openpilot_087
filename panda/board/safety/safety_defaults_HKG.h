@@ -9,7 +9,7 @@ int HKG_MDPS12_checksum = -1;
 int HKG_MDPS12_cnt = 0;
 int HKG_last_StrColT = 0;
 
-// modify  
+// make xx979xx
 // Modify  by atom
 
 int default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
