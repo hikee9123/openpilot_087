@@ -93,7 +93,7 @@ void safety_setter_thread() {
   panda->set_unsafe_mode(0);  // see safety_declarations.h for allowed values
 
   auto safety_param = car_params.getSafetyParam();
-  LOGW("setting safety model: %d with param %d", (int)safety_model, safety_param);
+  LOGW("setting safety model: %d with param %d", (int)safety_model, safety_param);  // 23  , 2
 
   panda->set_safety_model(safety_model, safety_param);
 
