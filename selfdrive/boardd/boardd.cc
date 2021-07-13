@@ -90,7 +90,9 @@ void safety_setter_thread() {
   cereal::CarParams::Reader car_params = cmsg.getRoot<cereal::CarParams>();
   cereal::CarParams::SafetyModel safety_model = car_params.getSafetyModel();
 
-  panda->set_unsafe_mode(0);  // see safety_declarations.h for allowed values
+  panda->set_unsafe_mode(1);  // see safety_declarations.h for allowed values
+  //panda->set_unsafe_mode(UNSAFE_DISABLE_DISENGAGE_ON_GAS);
+  
 
   auto safety_param = car_params.getSafetyParam();
   LOGW("setting safety model: %d with param %d", (int)safety_model, safety_param);  // 23  , 2
