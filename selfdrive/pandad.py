@@ -90,7 +90,7 @@ def main() -> None:
 
   # atom
   cloudlog.info("Resetting panda")
-  #panda.reset()
+  panda.reset()
 
   os.chdir(os.path.join(BASEDIR, "selfdrive/boardd"))
   os.execvp("./boardd", ["./boardd"])
