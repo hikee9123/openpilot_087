@@ -9,6 +9,13 @@ int HKG_MDPS12_checksum = -1;
 int HKG_MDPS12_cnt = 0;
 int HKG_last_StrColT = 0;
 
+int board_has_obd()
+{
+  int has_obd = current_board->has_obd;
+
+  return has_obd;
+}
+
 int default_rx_hook(CAN_FIFOMailBox_TypeDef *to_push) {
   int bus = GET_BUS(to_push);
   int addr = GET_ADDR(to_push);
