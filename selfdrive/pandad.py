@@ -88,6 +88,7 @@ def main() -> None:
   if health["heartbeat_lost"]:
     cloudlog.event("heartbeat lost", deviceState=health)
 
+  # atom
   cloudlog.info("Resetting panda")
   panda.reset()
 

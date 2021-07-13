@@ -695,11 +695,16 @@ void tick_handler(void) {
             siren_countdown = 5U;
           }
 
-          if (current_safety_mode != SAFETY_SILENT) {
-            set_safety_mode(SAFETY_SILENT, 0U);
-          }
-          if (power_save_status != POWER_SAVE_STATUS_ENABLED) {
-            set_power_save_state(POWER_SAVE_STATUS_ENABLED);
+          //if (current_safety_mode != SAFETY_SILENT) {
+          //  set_safety_mode(SAFETY_SILENT, 0U);
+          //}
+          //if (power_save_status != POWER_SAVE_STATUS_ENABLED) {
+          //  set_power_save_state(POWER_SAVE_STATUS_ENABLED);
+          //}
+
+          puts(" seconds. Safety is set to NOOUTPUT mode.\n");  // atom
+          if (current_safety_mode != SAFETY_NOOUTPUT) {
+            set_safety_mode(SAFETY_NOOUTPUT, 0U);
           }
 
           // set flag to indicate the heartbeat was lost
@@ -804,7 +809,8 @@ int main(void) {
   microsecond_timer_init();
 
   // init to SILENT and can silent
-  set_safety_mode(SAFETY_SILENT, 0);
+  //set_safety_mode(SAFETY_SILENT, 0);
+  set_safety_mode(SAFETY_NOOUTPUT, 0); // MDPS will hard fault if SAFETY_SILENT set
 
   // enable CAN TXs
   current_board->enable_can_transceivers(true);
