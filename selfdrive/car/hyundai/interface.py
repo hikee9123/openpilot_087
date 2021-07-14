@@ -260,6 +260,8 @@ class CarInterface(CarInterfaceBase):
                      CAR.GENESIS_G70, CAR.GENESIS_G80, CAR.KIA_CEED, CAR.ELANTRA, CAR.GRANDEUR_HEV_19]:
       ret.safetyModel = car.CarParams.SafetyModel.hyundaiLegacy
 
+    ret.safetyModel = car.CarParams.SafetyModel.hyundaiCommunity
+    
     # set appropriate safety param for gas signal
     if candidate in HYBRID_CAR:
       ret.safetyParam = 2
