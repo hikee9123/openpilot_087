@@ -111,10 +111,13 @@ def manager_thread():
   cloudlog.info("manager start")
   cloudlog.info({"environ": os.environ})
 
-  # save boot log
-  subprocess.call("./bootlog", cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
+
 
   params = Params()
+  enableLogger = params.get_bool("UploadRaw")
+  if enableLogger:
+    # save boot log
+    subprocess.call("./bootlog", cwd=os.path.join(BASEDIR, "selfdrive/loggerd"))
 
   ignore = []
   if params.get("DongleId", encoding='utf8') == UNREGISTERED_DONGLE_ID:

@@ -331,7 +331,12 @@ def thermald_thread():
     update_failed_count = 0 if update_failed_count is None else int(update_failed_count)
     last_update_exception = params.get("LastUpdateException", encoding='utf8')
 
-    if update_failed_count > 15 and last_update_exception is not None:
+    enableLogger = params.get_bool("UploadRaw")
+    if not enableLogger:
+      set_offroad_alert_if_changed("Offroad_UpdateFailed", False)
+      set_offroad_alert_if_changed("Offroad_ConnectivityNeeded", False)
+      set_offroad_alert_if_changed("Offroad_ConnectivityNeededPrompt", False)
+    elif update_failed_count > 15 and last_update_exception is not None:
       if current_branch in ["release2", "dashcam"]:
         extra_text = "Ensure the software is correctly installed"
       else:
