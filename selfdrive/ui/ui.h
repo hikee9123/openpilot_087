@@ -62,9 +62,9 @@ typedef enum UIStatus {
 
 const QColor bg_colors [] = {
   [STATUS_DISENGAGED] =  QColor(0x17, 0x33, 0x49, 0xc8),
-  [STATUS_ENGAGED] = QColor(0x17, 0x86, 0x44, 0xf1),
-  [STATUS_WARNING] = QColor(0xDA, 0x6F, 0x25, 0xf1),
-  [STATUS_ALERT] = QColor(0xC9, 0x22, 0x31, 0xf1),
+  [STATUS_ENGAGED] = QColor(0x17, 0x86, 0x44, 0x51),
+  [STATUS_WARNING] = QColor(0xDA, 0x6F, 0x25, 0x51),
+  [STATUS_ALERT] = QColor(0xC9, 0x22, 0x31, 0x31),
 };
 
 typedef struct {
@@ -102,6 +102,27 @@ typedef struct UIScene {
 
   // atom
   cereal::DeviceState::Reader deviceState;
+  cereal::LiveNaviData::Reader liveNaviData;
+  cereal::ControlsState::Reader controls_state;
+  
+
+  struct _screen
+  {
+     int  nTime;
+     int  map_is_running, map_command_on, map_command_off;
+     int  map_on_overlay;
+     int  autoScreenOff;
+     int  brightness;
+     int  nVolumeBoost;
+     int  awake;
+  } scr;
+
+  struct _STATUS_
+  {
+      std::string alertTextMsg1;
+      std::string alertTextMsg2; 
+      std::string alertTextMsg3;
+  } alert;
 } UIScene;
 
 typedef struct UIState {

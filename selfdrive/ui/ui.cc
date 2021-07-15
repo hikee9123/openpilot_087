@@ -207,7 +207,15 @@ static void update_state(UIState *s) {
   // atom 
    if (sm.updated("deviceState")) {
     scene.deviceState = sm["deviceState"].getDeviceState();
-   }     
+   }
+    
+   if (scene.started && sm.updated("controlsState")) {
+    scene.controls_state = sm["controlsState"].getControlsState();
+// debug Message
+    scene.alert.alertTextMsg1 = scene.controls_state.getAlertTextMsg1();
+    scene.alert.alertTextMsg2 = scene.controls_state.getAlertTextMsg2();
+    scene.alert.alertTextMsg3 = scene.controls_state.getAlertTextMsg3();
+   }   
 }
 
 static void update_params(UIState *s) {

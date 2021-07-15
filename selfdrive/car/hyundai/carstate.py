@@ -6,6 +6,9 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
+GearShifter = car.CarState.GearShifter
+
+
 
 class CarState(CarStateBase):
   def __init__(self, CP):
@@ -18,6 +21,29 @@ class CarState(CarStateBase):
       self.shifter_values = can_define.dv["TCU12"]["CUR_GR"]
     else:  # preferred and elect gear methods use same definition
       self.shifter_values = can_define.dv["LVR12"]["CF_Lvr_Gear"]
+
+    # atom
+    self.cruise_buttons = 0
+    self.time_delay_int = 0
+    self.disable_status = 0
+    
+
+  def cruise_enabled_btn( self, main_on, vEgo ):
+    if main_on == False:
+      self.time_delay_int = 0
+    elif self.disable_status:
+      self.time_delay_int = 2000
+    elif vEgo > 5:   # 15 km/h
+        self.time_delay_int = 0
+    elif self.time_delay_int > 0:
+      self.time_delay_int -= 1
+
+    if self.time_delay_int <= 0:
+      enabled = main_on
+    else:
+      enabled = False
+
+    return  enabled
 
 
   def update(self, cp, cp_cam):
@@ -48,6 +74,10 @@ class CarState(CarStateBase):
     ret.steerWarning = cp.vl["MDPS12"]["CF_Mdps_ToiUnavail"] != 0 or cp.vl["MDPS12"]["CF_Mdps_ToiFlt"] != 0
 
     # cruise state
+    self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
+    ret.cruiseState.accActive = self.acc_active
+    ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
+    ret.cruiseState.cruiseSwState = self.cruise_buttons
     if self.CP.openpilotLongitudinalControl:
       ret.cruiseState.available = cp.vl["TCS13"]["ACCEnable"] == 0
       ret.cruiseState.enabled = cp.vl["TCS13"]["ACC_REQ"] == 1
@@ -57,7 +87,7 @@ class CarState(CarStateBase):
       ret.cruiseState.enabled = ret.cruiseState.available # cp.vl["SCC12"]["ACCMode"] != 0
       ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
 
-    if ret.cruiseState.enabled:
+    if self.acc_active:
       speed_conv = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] else CV.KPH_TO_MS
       ret.cruiseState.speed = cp.vl["SCC11"]["VSetDis"] * speed_conv
     else:
@@ -112,6 +142,14 @@ class CarState(CarStateBase):
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
+    if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
+      self.disable_status = True
+    else:
+      self.disable_status = False
+
+    if not self.cruise_enabled_btn( ret.cruiseState.available, ret.vEgo ):
+      ret.cruiseState.available = False      
+    
     return ret
 
   @staticmethod
@@ -174,6 +212,8 @@ class CarState(CarStateBase):
       ("SCCInfoDisplay", "SCC11", 0),
       ("ACC_ObjDist", "SCC11", 0),
       ("ACCMode", "SCC12", 1),
+
+      ("TauGapSet", "SCC11", 4),      
     ]
 
     checks = [
