@@ -25,6 +25,12 @@ from selfdrive.controls.lib.vehicle_model import VehicleModel
 from selfdrive.locationd.calibrationd import Calibration
 from selfdrive.hardware import HARDWARE, TICI
 
+
+# atom
+from selfdrive.car.hyundai.interface import CarInterface
+import common.log as  trace1
+
+
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
 LANE_DEPARTURE_THRESHOLD = 0.1
 STEER_ANGLE_SATURATION_TIMEOUT = 1.0 / DT_CTRL
@@ -502,6 +508,12 @@ class Controls:
   def publish_logs(self, CS, start_time, actuators, lac_log):
     """Send actuators and hud commands to the car, send controlsstate and MPC logging"""
 
+    global trace1
+    log_alertTextMsg1 = trace1.global_alertTextMsg1
+    log_alertTextMsg2 = trace1.global_alertTextMsg2
+    log_alertTextMsg3 = trace1.global_alertTextMsg3
+
+
     CC = car.CarControl.new_message()
     CC.enabled = self.enabled
     CC.actuators = actuators
@@ -566,6 +578,8 @@ class Controls:
     steer_angle_without_offset = math.radians(CS.steeringAngleDeg - params.angleOffsetAverageDeg)
     curvature = -self.VM.calc_curvature(steer_angle_without_offset, CS.vEgo)
 
+    angle_steers_des = actuators.steeringAngleDeg
+
     # controlsState
     dat = messaging.new_message('controlsState')
     dat.valid = CS.canValid
@@ -584,6 +598,7 @@ class Controls:
     controlsState.active = self.active
     controlsState.curvature = curvature
     controlsState.state = self.state
+    controlsState.steeringAngleDesiredDegDEPRECATED = angle_steers_des
     controlsState.engageable = not self.events.any(ET.NO_ENTRY)
     controlsState.longControlState = self.LoC.long_control_state
     controlsState.vPid = float(self.LoC.v_pid)
@@ -595,6 +610,11 @@ class Controls:
     controlsState.startMonoTime = int(start_time * 1e9)
     controlsState.forceDecel = bool(force_decel)
     controlsState.canErrorCounter = self.can_error_counter
+    controlsState.output = float(lac_log.output)
+    controlsState.alertTextMsg1 = str(log_alertTextMsg1)
+    controlsState.alertTextMsg2 = str(log_alertTextMsg2)
+    controlsState.alertTextMsg3 = str(log_alertTextMsg3)
+
 
     if self.joystick_mode:
       controlsState.lateralControlState.debugState = lac_log

@@ -98,6 +98,10 @@ typedef struct UIScene {
   float light_sensor, accel_sensor, gyro_sensor;
   bool started, ignition, is_metric, longitudinal_control, end_to_end;
   uint64_t started_frame;
+
+
+  // atom
+  cereal::DeviceState::Reader deviceState;
 } UIScene;
 
 typedef struct UIState {

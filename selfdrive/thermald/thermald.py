@@ -158,6 +158,7 @@ def thermald_thread():
   network_info = None
   modem_version = None
   registered_count = 0
+  wifiIpAddress = 'N/A'
 
   current_filter = FirstOrderFilter(0., CURRENT_TAU, DT_TRML)
   cpu_temp_filter = FirstOrderFilter(0., CPU_TEMP_TAU, DT_TRML)
@@ -191,6 +192,7 @@ def thermald_thread():
     cloudlog.event("CPR", data=cpr_data)
 
   while 1:
+    ts = sec_since_boot()
     pandaState = messaging.recv_sock(pandaState_sock, wait=True)
     msg = read_thermal(thermal_config)
 
@@ -237,6 +239,7 @@ def thermald_thread():
         network_type = HARDWARE.get_network_type()
         network_strength = HARDWARE.get_network_strength(network_type)
         network_info = HARDWARE.get_network_info()  # pylint: disable=assignment-from-none
+        wifiIpAddress = HARDWARE.get_ip_address()
 
         # Log modem version once
         if modem_version is None:
@@ -266,6 +269,7 @@ def thermald_thread():
     if network_info is not None:
       msg.deviceState.networkInfo = network_info
 
+    msg.deviceState.wifiIpAddress = wifiIpAddress
     msg.deviceState.batteryPercent = HARDWARE.get_battery_capacity()
     msg.deviceState.batteryStatus = HARDWARE.get_battery_status()
     msg.deviceState.batteryCurrent = HARDWARE.get_battery_current()
@@ -440,6 +444,10 @@ def thermald_thread():
 
     should_start_prev = should_start
     startup_conditions_prev = startup_conditions.copy()
+
+
+    if usb_power:
+      power_monitor.charging_ctrl( msg, ts, 60, 40 )    
 
     # report to server once every 10 minutes
     if (count % int(600. / DT_TRML)) == 0:
