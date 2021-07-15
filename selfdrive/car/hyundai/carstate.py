@@ -147,8 +147,8 @@ class CarState(CarStateBase):
     else:
       self.disable_status = False
 
-    if not self.cruise_enabled_btn( ret.cruiseState.available, ret.vEgo ):
-      ret.cruiseState.available = False      
+    if not self.cruise_enabled_btn( ret.cruiseState.enabled, ret.vEgo ):
+      ret.cruiseState.enabled = False      
     
     return ret
 
