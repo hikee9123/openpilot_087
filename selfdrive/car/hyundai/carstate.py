@@ -134,6 +134,7 @@ class CarState(CarStateBase):
     # save the entire LKAS11 and CLU11
     self.lkas11 = copy.copy(cp_cam.vl["LKAS11"])
     self.clu11 = copy.copy(cp.vl["CLU11"])
+    self.mdps12 = copy.copy(cp.vl["MDPS12"])
     self.park_brake = cp.vl["TCS13"]["PBRAKE_ACT"] == 1
     self.steer_state = cp.vl["MDPS12"]["CF_Mdps_ToiActive"]  # 0 NOT ACTIVE, 1 ACTIVE
     self.lead_distance = cp.vl["SCC11"]["ACC_ObjDist"]
@@ -203,6 +204,11 @@ class CarState(CarStateBase):
       ("CF_Mdps_ToiUnavail", "MDPS12", 0),
       ("CF_Mdps_ToiFlt", "MDPS12", 0),
       ("CR_Mdps_OutTq", "MDPS12", 0),
+
+      ("CF_Mdps_MsgCount2", "MDPS12", 0),  #
+      ("CF_Mdps_Chksum2", "MDPS12", 0),    #
+
+
 
       ("SAS_Angle", "SAS11", 0),
       ("SAS_Speed", "SAS11", 0),
@@ -322,6 +328,7 @@ class CarState(CarStateBase):
       ("CF_Lkas_HbaOpt", "LKAS11", 0),
       ("CF_Lkas_FcwSysState", "LKAS11", 0),
       ("CF_Lkas_FcwCollisionWarning", "LKAS11", 0),
+      ("CF_Lkas_MsgCount", "LKAS11", 0),  #  append
       ("CF_Lkas_FusionState", "LKAS11", 0),
       ("CF_Lkas_FcwOpt_USM", "LKAS11", 0),
       ("CF_Lkas_LdwsOpt_USM", "LKAS11", 0),

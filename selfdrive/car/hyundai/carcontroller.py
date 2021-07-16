@@ -1,7 +1,7 @@
 from cereal import car
 from common.realtime import DT_CTRL
 from selfdrive.car import apply_std_steer_torque_limits
-from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfahda_mfc
+from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfahda_mfc, create_mdps12
 from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR
 from opendbc.can.packer import CANPacker
 
@@ -41,6 +41,7 @@ class CarController():
     self.car_fingerprint = CP.carFingerprint
     self.steer_rate_limited = False
     self.last_resume_frame = 0
+    self.lkas11_cnt = 0    
 
   def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
              left_lane, right_lane, left_lane_depart, right_lane_depart):
@@ -61,11 +62,19 @@ class CarController():
       process_hud_alert(enabled, self.car_fingerprint, visual_alert,
                         left_lane, right_lane, left_lane_depart, right_lane_depart)
 
+
+    if frame == 0: # initialize counts from last received count signals
+      self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
+
+    self.lkas11_cnt %= 0x10
+    
     can_sends = []
-    can_sends.append(create_lkas11(self.packer, frame, self.car_fingerprint, apply_steer, lkas_active,
+    can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, lkas_active,
                                    CS.lkas11, sys_warning, sys_state, enabled,
                                    left_lane, right_lane,
                                    left_lane_warning, right_lane_warning))
+    if apply_steer:
+      can_sends.append( create_mdps12(self.packer, frame, CS.mdps12) )
 
     if pcm_cancel_cmd:
       can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.CANCEL))
@@ -81,4 +90,5 @@ class CarController():
                                                    CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KIA_CEED, CAR.KIA_SELTOS, CAR.ELANTRA_2021, CAR.ELANTRA_HEV_2021]:
       can_sends.append(create_lfahda_mfc(self.packer, enabled))
 
+    self.lkas11_cnt += 1
     return can_sends
