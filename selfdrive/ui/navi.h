@@ -74,7 +74,7 @@ static void ui_draw_navi(UIState *s)
  // int  map_enabled = scene.liveNaviData.getMapEnable();
 
 
-
+  mapValid = 0;
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 }
@@ -83,7 +83,7 @@ static void ui_draw_debug1(UIState *s)
 {
   UIScene &scene = s->scene;
  
-  nvgFontSize(s->vg, 36*2);
+  nvgFontSize(s->vg, 36);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
 
   ui_print(s, 0, 30, scene.alert.alertTextMsg1.c_str()  );
@@ -97,8 +97,8 @@ void ui_main_navi(UIState *s)
 {
   //UIScene &scene = s->scene;
 
-  if( 0 )
+  //if( 0 )
     ui_draw_navi( s );
-    
+
   ui_draw_debug1( s );
 }
