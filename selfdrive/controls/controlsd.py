@@ -573,7 +573,7 @@ class Controls:
       # send car controls over can
       can_sends = self.CI.apply(CC)
       if not self.hyundai_lkas:
-         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
+        self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
                   (self.state == State.softDisabling)
