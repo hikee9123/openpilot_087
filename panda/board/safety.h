@@ -1,8 +1,7 @@
 // include first, needed by safety policies
 #include "safety_declarations.h"
 // Include the actual safety policies.
-//#include "safety/safety_defaults.h"
-#include "safety/safety_defaults_HKG.h"
+#include "safety/safety_defaults.h"
 #include "safety/safety_honda.h"
 #include "safety/safety_toyota.h"
 #include "safety/safety_tesla.h"
@@ -16,7 +15,6 @@
 #include "safety/safety_nissan.h"
 #include "safety/safety_volkswagen.h"
 #include "safety/safety_elm327.h"
-#include "safety/safety_hyundai_community.h"
 
 // from cereal.car.CarParams.SafetyModel
 #define SAFETY_SILENT 0U
@@ -129,7 +127,7 @@ int get_addr_check_index(CAN_FIFOMailBox_TypeDef *to_push, AddrCheckStruct addr_
 
 // 1Hz safety function called by main. Now just a check for lagging safety messages
 void safety_tick(const safety_hooks *hooks) {
-  uint32_t ts = MICROSECOND_TIMER->CNT;
+  uint32_t ts = microsecond_timer_get();
   if (hooks->addr_check != NULL) {
     for (int i=0; i < hooks->addr_check_len; i++) {
       uint32_t elapsed_time = get_ts_elapsed(ts, hooks->addr_check[i].last_timestamp);
@@ -167,7 +165,7 @@ bool is_msg_valid(AddrCheckStruct addr_list[], int index) {
 
 void update_addr_timestamp(AddrCheckStruct addr_list[], int index) {
   if (index != -1) {
-    uint32_t ts = MICROSECOND_TIMER->CNT;
+    uint32_t ts = microsecond_timer_get();
     addr_list[index].last_timestamp = ts;
   }
 }
@@ -207,14 +205,12 @@ void generic_rx_checks(bool stock_ecu_detected) {
   // exit controls on rising edge of gas press
   if (gas_pressed && !gas_pressed_prev && !(unsafe_mode & UNSAFE_DISABLE_DISENGAGE_ON_GAS)) {
     controls_allowed = 0;
-    puts("  gas_pressed: controls_allowed = 0");
   }
   gas_pressed_prev = gas_pressed;
 
   // exit controls on rising edge of brake press
-  if (brake_pressed && (!brake_pressed_prev || vehicle_moving) && !(unsafe_mode & UNSAFE_DISABLE_DISENGAGE_ON_GAS) ) {
+  if (brake_pressed && (!brake_pressed_prev || vehicle_moving)) {
     controls_allowed = 0;
-    puts("  brake_pressed: controls_allowed = 0");
   }
   brake_pressed_prev = brake_pressed;
 
@@ -254,9 +250,8 @@ const safety_hook_config safety_hook_registry[] = {
   {SAFETY_NISSAN, &nissan_hooks},
   {SAFETY_NOOUTPUT, &nooutput_hooks},
   {SAFETY_HYUNDAI_LEGACY, &hyundai_legacy_hooks},
-  {SAFETY_TESLA, &tesla_hooks},
-  {SAFETY_HYUNDAI_COMMUNITY, &hyundai_community_hooks},  
 #ifdef ALLOW_DEBUG
+  {SAFETY_TESLA, &tesla_hooks},
   {SAFETY_MAZDA, &mazda_hooks},
   {SAFETY_SUBARU_LEGACY, &subaru_legacy_hooks},
   {SAFETY_VOLKSWAGEN_PQ, &volkswagen_pq_hooks},
