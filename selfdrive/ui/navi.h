@@ -97,6 +97,6 @@ void ui_main_navi(UIState *s)
 {
   //UIScene &scene = s->scene;
 
-  ui_draw_navi( s );
+  //ui_draw_navi( s );
   ui_draw_debug1( s );
 }

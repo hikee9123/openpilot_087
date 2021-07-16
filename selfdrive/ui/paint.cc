@@ -293,7 +293,7 @@ void ui_draw(UIState *s, int w, int h) {
     ui_draw_vision(s);
   }
   
-  // ui_main_navi( s );
+  ui_main_navi( s );
   nvgEndFrame(s->vg);
   glDisable(GL_BLEND);
 }
