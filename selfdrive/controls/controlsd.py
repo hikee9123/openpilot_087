@@ -175,6 +175,7 @@ class Controls:
 
     # atom
     self.hyundai_lkas = self.read_only  #read_only
+    self.hyundai_time = 0
 
 
   def update_events(self, CS):
@@ -675,6 +676,7 @@ class Controls:
     if self.read_only:
       self.hyundai_lkas = self.read_only
     elif CS.cruiseState.enabled and self.hyundai_lkas:
+      self.hyundai_time = 10
       self.hyundai_lkas = False  
 
     self.update_events(CS)
@@ -694,7 +696,10 @@ class Controls:
     self.prof.checkpoint("Sent")
 
     if not CS.cruiseState.enabled and not self.hyundai_lkas:
-      self.hyundai_lkas = True    
+      if self.hyundai_time > 0:
+        self.hyundai_time -= 1
+      else:
+        self.hyundai_lkas = True    
 
   def controlsd_thread(self):
     while True:
