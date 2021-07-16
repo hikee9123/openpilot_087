@@ -74,7 +74,7 @@ static void ui_draw_navi(UIState *s)
  // int  map_enabled = scene.liveNaviData.getMapEnable();
 
 
-  mapValid = 0;
+
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 }
