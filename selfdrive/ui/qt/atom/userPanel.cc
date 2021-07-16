@@ -610,7 +610,7 @@ CAutoFocus::CAutoFocus() : AbstractControl("Auto Focus", "Focus을 변경합니�
     } else {
     }
 
-   // Params::param_value.autoFocus = value;
+    QUIState::ui_state.scene.scr.autoFocus = value;
     QString values = QString::number(value);
     Params().put("OpkrAutoFocus", values.toStdString());
     refresh();
@@ -625,7 +625,7 @@ CAutoFocus::CAutoFocus() : AbstractControl("Auto Focus", "Focus을 변경합니�
     } else {
     }
 
-    // Params::param_value.autoFocus = value;
+    QUIState::ui_state.scene.scr.autoFocus = value;
     QString values = QString::number(value);
     Params().put("OpkrAutoFocus", values.toStdString());
     refresh();

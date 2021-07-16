@@ -215,6 +215,12 @@ static void update_state(UIState *s) {
     scene.alert.alertTextMsg1 = scene.controls_state.getAlertTextMsg1();
     scene.alert.alertTextMsg2 = scene.controls_state.getAlertTextMsg2();
     scene.alert.alertTextMsg3 = scene.controls_state.getAlertTextMsg3();
+   } 
+
+   if( sm.updated("liveNaviData"))
+   {
+     scene.liveNaviData = sm["liveNaviData"].getLiveNaviData();
+     scene.scr.map_is_running = scene.liveNaviData.getMapEnable();
    }   
 }
 
@@ -289,6 +295,7 @@ QUIState::QUIState(QObject *parent) : QObject(parent) {
   ui_state.sm = std::make_unique<SubMaster, const std::initializer_list<const char *>>({
     "modelV2", "controlsState", "liveCalibration", "radarState", "deviceState", "roadCameraState",
     "pandaState", "carParams", "driverMonitoringState", "sensorEvents", "carState", "liveLocationKalman",
+    "liveNaviData",
   });
 
   ui_state.fb_w = vwp_w;

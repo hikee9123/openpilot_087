@@ -104,7 +104,7 @@ typedef struct UIScene {
   cereal::DeviceState::Reader deviceState;
   cereal::LiveNaviData::Reader liveNaviData;
   cereal::ControlsState::Reader controls_state;
-  
+
 
   struct _screen
   {
@@ -112,6 +112,7 @@ typedef struct UIScene {
      int  map_is_running, map_command_on, map_command_off;
      int  map_on_overlay;
      int  autoScreenOff;
+     int  autoFocus;
      int  brightness;
      int  nVolumeBoost;
      int  awake;
