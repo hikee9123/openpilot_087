@@ -72,7 +72,7 @@ class Controls:
       ignore = ['driverCameraState', 'managerState'] if SIMULATION else None
       self.sm = messaging.SubMaster(['deviceState', 'pandaState', 'modelV2', 'liveCalibration',
                                      'driverMonitoringState', 'longitudinalPlan', 'lateralPlan', 'liveLocationKalman',
-                                     'managerState', 'liveParameters', 'radarState'] + self.camera_packets + joystick_packet,
+                                     'managerState', 'liveParameters', 'radarState','liveNaviData'] + self.camera_packets + joystick_packet,
                                      ignore_alive=ignore, ignore_avg_freq=['radarState', 'longitudinalPlan'])
 
     self.can_sock = can_sock
@@ -172,6 +172,10 @@ class Controls:
     # controlsd is driven by can recv, expected at 100Hz
     self.rk = Ratekeeper(100, print_delay_threshold=None)
     self.prof = Profiler(False)  # off by default
+
+    # atom
+    self.hyundai_lkas = self.read_only  #read_only
+
 
   def update_events(self, CS):
     """Compute carEvents from carState"""
@@ -568,7 +572,7 @@ class Controls:
     if not self.read_only and self.initialized:
       # send car controls over can
       can_sends = self.CI.apply(CC)
-      if CS.cruiseState.enabled:
+      if not self.hyundai_lkas:
          self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
@@ -667,9 +671,15 @@ class Controls:
     CS = self.data_sample()
     self.prof.checkpoint("Sample")
 
+    # atom
+    if self.read_only:
+      self.hyundai_lkas = self.read_only
+    elif CS.cruiseState.enabled and self.hyundai_lkas:
+      self.hyundai_lkas = False  
+
     self.update_events(CS)
 
-    if not self.read_only and self.initialized:
+    if not self.hyundai_lkas and self.initialized:
       # Update control state
       self.state_transition(CS)
       self.prof.checkpoint("State transition")
@@ -682,6 +692,9 @@ class Controls:
     # Publish data
     self.publish_logs(CS, start_time, actuators, lac_log)
     self.prof.checkpoint("Sent")
+
+    if not CS.cruiseState.enabled and not self.hyundai_lkas:
+      self.hyundai_lkas = True    
 
   def controlsd_thread(self):
     while True:
