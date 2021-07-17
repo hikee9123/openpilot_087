@@ -71,6 +71,7 @@ static void update_leads(UIState *s, const cereal::RadarState::Reader &radar_sta
       // negative because radarState uses left positive convention
       calib_frame_to_full_frame(s, lead_data.getDRel(), -lead_data.getYRel(), z + 1.22, &s->scene.lead_vertices[i]);
     }
+    s->scene.lead_data[i] = lead_data;
   }
 }
 
@@ -199,7 +200,12 @@ static void update_state(UIState *s) {
 
     scene.light_sensor = std::clamp<float>((1023.0 / max_lines) * (max_lines - camera_state.getIntegLines() * gain), 0.0, 1023.0);
   }
-  scene.started = sm["deviceState"].getDeviceState().getStarted() && scene.ignition;
+
+
+  if( scene.IsOpenpilotViewEnabled )
+    scene.started = sm["deviceState"].getDeviceState().getStarted();
+  else
+    scene.started = sm["deviceState"].getDeviceState().getStarted() && scene.ignition;
 
 
 
@@ -216,12 +222,19 @@ static void update_state(UIState *s) {
     scene.alert.alertTextMsg2 = scene.controls_state.getAlertTextMsg2();
     scene.alert.alertTextMsg3 = scene.controls_state.getAlertTextMsg3();
    } 
+   if (sm.updated("carState")) {
+    scene.car_state = sm["carState"].getCarState();
 
+    auto cruiseState = scene.car_state.getCruiseState();
+    scene.scr.awake = cruiseState.getCruiseSwState();
+   } 
+   
    if( sm.updated("liveNaviData"))
    {
      scene.liveNaviData = sm["liveNaviData"].getLiveNaviData();
      scene.scr.map_is_running = scene.liveNaviData.getMapEnable();
-   }   
+   } 
+
 }
 
 static void update_params(UIState *s) {
@@ -229,6 +242,7 @@ static void update_params(UIState *s) {
   UIScene &scene = s->scene;
   if (frame % (5*UI_FREQ) == 0) {
     scene.is_metric = Params().getBool("IsMetric");
+    scene.IsOpenpilotViewEnabled = Params().getBool("IsOpenpilotViewEnabled");
   }
 }
 

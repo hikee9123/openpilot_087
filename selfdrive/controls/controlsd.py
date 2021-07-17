@@ -174,8 +174,7 @@ class Controls:
     self.prof = Profiler(False)  # off by default
 
     # atom
-    self.hyundai_lkas = self.read_only  #read_only
-    self.hyundai_time = 0
+    self.openpilot_mode = 10
 
 
   def update_events(self, CS):
@@ -573,7 +572,7 @@ class Controls:
     if not self.read_only and self.initialized:
       # send car controls over can
       can_sends = self.CI.apply(CC)
-      if not self.hyundai_lkas:
+      if self.openpilot_mode:
         self.pm.send('sendcan', can_list_to_can_capnp(can_sends, msgtype='sendcan', valid=CS.canValid))
 
     force_decel = (self.sm['driverMonitoringState'].awarenessStatus < 0.) or \
@@ -674,14 +673,14 @@ class Controls:
 
     # atom
     if self.read_only:
-      self.hyundai_lkas = self.read_only
-    elif CS.cruiseState.enabled and self.hyundai_lkas:
-      self.hyundai_time = 50
-      self.hyundai_lkas = False  
+      self.openpilot_mode = 0
+    elif CS.cruiseState.enabled:
+      self.openpilot_mode = 50
+
 
     self.update_events(CS)
 
-    if not self.hyundai_lkas and self.initialized:
+    if not self.read_only and self.initialized:
       # Update control state
       self.state_transition(CS)
       self.prof.checkpoint("State transition")
@@ -695,11 +694,11 @@ class Controls:
     self.publish_logs(CS, start_time, actuators, lac_log)
     self.prof.checkpoint("Sent")
 
-    if not CS.cruiseState.enabled and not self.hyundai_lkas:
-      if self.hyundai_time > 0:
-        self.hyundai_time -= 1
+    if not CS.cruiseState.enabled and self.openpilot_mode:
+      if self.openpilot_mode > 0:
+        self.openpilot_mode -= 1
       else:
-        self.hyundai_lkas = True    
+        self.openpilot_mode = 0    
 
   def controlsd_thread(self):
     while True:

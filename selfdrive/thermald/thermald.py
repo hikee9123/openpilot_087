@@ -232,6 +232,11 @@ def thermald_thread():
           pandaState_prev.pandaState.pandaType != log.PandaState.PandaType.unknown:
           params.clear_all(ParamKeyType.CLEAR_ON_PANDA_DISCONNECT)
       pandaState_prev = pandaState
+    else:
+      # atom
+      is_openpilot_view_enabled = params.get_bool("IsOpenpilotViewEnabled") # IsRHD
+      if is_openpilot_view_enabled:
+        startup_conditions["ignition"] = True
 
     # get_network_type is an expensive call. update every 10s
     if (count % int(10. / DT_TRML)) == 0:

@@ -25,13 +25,13 @@ class CarState(CarStateBase):
     # atom
     self.cruise_buttons = 0
     self.time_delay_int = 0
-    self.disable_status = 0
+    self.enable_status = 0
     
 
   def cruise_enabled_btn( self, main_on, vEgo ):
     if main_on == False:
       self.time_delay_int = 0
-    elif self.disable_status:
+    elif not self.enable_status:
       self.time_delay_int = 2000
     elif vEgo > 5:   # 15 km/h
         self.time_delay_int = 0
@@ -144,9 +144,9 @@ class CarState(CarStateBase):
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
     if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
-      self.disable_status = True
+      self.enable_status = False
     else:
-      self.disable_status = False
+      self.enable_status = ret.cruiseState.enabled
 
     if not self.cruise_enabled_btn( ret.cruiseState.enabled, ret.vEgo ):
       ret.cruiseState.enabled = False      

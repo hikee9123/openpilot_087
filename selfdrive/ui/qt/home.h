@@ -56,6 +56,9 @@ public slots:
 protected:
   void mousePressEvent(QMouseEvent* e) override;
 
+private
+  void  mouseEventLatch(QMouseEvent* e);
+
 private:
   Sidebar *sidebar;
   OffroadHome *home;

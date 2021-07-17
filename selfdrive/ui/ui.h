@@ -104,8 +104,10 @@ typedef struct UIScene {
   cereal::DeviceState::Reader deviceState;
   cereal::LiveNaviData::Reader liveNaviData;
   cereal::ControlsState::Reader controls_state;
+  cereal::CarState::Reader car_state;
+  cereal::RadarState::LeadData::Reader lead_data[2];  
 
-
+  int  IsOpenpilotViewEnabled;
   struct _screen
   {
      int  nTime;
@@ -116,7 +118,16 @@ typedef struct UIScene {
      int  brightness;
      int  nVolumeBoost;
      int  awake;
+     int  sidebar;     
   } scr;
+
+  struct _mouse
+  {
+    int touch_x;
+    int touch_y;
+    int touch_cnt;
+
+  } mouse;
 
   struct _STATUS_
   {

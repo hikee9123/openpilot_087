@@ -65,7 +65,20 @@ void HomeWindow::showDriverView(bool show) {
   sidebar->setVisible(show == false);
 }
 
+void HomeWindow::mouseEventLatch(QMouseEvent* e) {
+  int e_x = e->x();
+  int e_y = e->y();
+  int e_button= e->button();
+  bool bSidebar = sidebar->isVisible();
+
+  QUIState::ui_state.scene.scr.sidebar = bSidebar;
+  QUIState::ui_state.scene.mouse.touch_x = e_x;
+  QUIState::ui_state.scene.mouse.touch_y = e_y;
+  QUIState::ui_state.scene.mouse.touch_cnt++;
+}
+
 void HomeWindow::mousePressEvent(QMouseEvent* e) {
+  mouseEventLatch( e );
   // Handle sidebar collapsing
   if (onroad->isVisible() && (!sidebar->isVisible() || e->x() > sidebar->width())) {
 

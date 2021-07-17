@@ -51,7 +51,7 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed
-    lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed
+    lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
 
     if not lkas_active:
       apply_steer = 0
@@ -67,7 +67,7 @@ class CarController():
       self.lkas11_cnt = CS.lkas11["CF_Lkas_MsgCount"] + 1
 
     self.lkas11_cnt %= 0x10
-    
+
     can_sends = []
     can_sends.append(create_lkas11(self.packer, self.lkas11_cnt, self.car_fingerprint, apply_steer, lkas_active,
                                    CS.lkas11, sys_warning, sys_state, enabled,
