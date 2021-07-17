@@ -184,7 +184,7 @@ static  bool screen_button_clicked( UIState *s, Rect rect )
   if( touch_cnt_old == -1 )
   {
     touch_cnt_old = touch_cnt;
-    return false
+    return false;
   }
 
   if( touch_cnt == touch_cnt_old ) return false;
