@@ -274,7 +274,7 @@ static void screen_draw_button(UIState *s)
  
 
   const int bb_dmr_w = 180;
-  const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - bb_dmr_w - bdr_s;
+  const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - bb_dmr_w;// - bdr_s;
 
    //btn_dashcam_rec
   Rect btn_rec = btn_dashcam_rec;
