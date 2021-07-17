@@ -210,7 +210,7 @@ static void draw_date_time(UIState *s)
   nvgFontFace(s->vg, "sans-semibold");
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
 
-  const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - 200;   // 1602
+  const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - 150;   // 1602
   nvgText(s->vg, bb_dmr_x, 23, now, NULL);
 }
 
