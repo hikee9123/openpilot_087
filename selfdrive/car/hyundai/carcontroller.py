@@ -5,7 +5,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR
 from opendbc.can.packer import CANPacker
 
-from selfdrive.car.hyundai.longcontrol  import NaviControl
+from selfdrive.car.hyundai.navicontrol  import NaviControl
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
