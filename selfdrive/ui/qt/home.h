@@ -56,7 +56,7 @@ public slots:
 protected:
   void mousePressEvent(QMouseEvent* e) override;
 
-private
+private:
   void  mouseEventLatch(QMouseEvent* e);
 
 private:
