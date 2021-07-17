@@ -141,10 +141,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
 
     float gpuTemp = maxGpuTemp[0];
     
-      if( cpuTemp > 80) {
+      if( gpuTemp > 80) {
         val_color = nvgRGBA(255, 188, 3, 200);
       }
-      if(cpuTemp > 92) {
+      if(gpuTemp > 92) {
         val_color = nvgRGBA(255, 0, 0, 200);
       }
 
