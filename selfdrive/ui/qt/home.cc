@@ -75,6 +75,8 @@ void HomeWindow::mouseEventLatch(QMouseEvent* e) {
   QUIState::ui_state.scene.mouse.touch_x = e_x;
   QUIState::ui_state.scene.mouse.touch_y = e_y;
   QUIState::ui_state.scene.mouse.touch_cnt++;
+
+  printf("mousePressEvent %d,%d  \n", e_x, e_y);
 }
 
 void HomeWindow::mousePressEvent(QMouseEvent* e) {
