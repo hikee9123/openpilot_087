@@ -136,8 +136,10 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     char val_str[16];
     char uom_str[6];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
-    float  maxGpuTemp = scene->deviceState.getGpuTempC();
-    float  memTemp = scene->deviceState.memoryTempC
+    auto  maxGpuTemp = scene->deviceState.getGpuTempC();
+    float  memTemp = scene->deviceState.getMemoryTempC();
+
+    float gpuTemp = maxGpuTemp[0];
     
       if( cpuTemp > 80) {
         val_color = nvgRGBA(255, 188, 3, 200);
@@ -147,7 +149,7 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
       }
 
        // temp is alway in C * 10
-      snprintf(val_str, sizeof(val_str), "%.1f", maxGpuTemp );
+      snprintf(val_str, sizeof(val_str), "%.1f", gpuTemp );
       snprintf(uom_str, sizeof(uom_str), "%.0f", memTemp);
       bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPU TEMP",
         bb_rx, bb_ry, bb_uom_dx,
