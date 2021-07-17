@@ -5,7 +5,7 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR
 from opendbc.can.packer import CANPacker
 
-from selfdrive.car.hyundai.longcontrol  import CLongControl
+from selfdrive.car.hyundai.longcontrol  import NaviControl
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
@@ -47,7 +47,7 @@ class CarController():
     self.last_lead_distance = 0
     self.lkas11_cnt = 0
 
-    self.longCtrl = CLongControl(self.p)    
+    self.NaviCtrl = NaviControl(self.p)    
 
 
   def update(self, c, CS, frame ):
@@ -111,13 +111,13 @@ class CarController():
     elif self.last_lead_distance != 0:
       self.last_lead_distance = 0
 
-    #elif CS.out.cruiseState.accActive:
-    #  btn_signal = self.longCtrl.update_longctrl( CS, sm )
-    #  if btn_signal != None:
-    #    can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
-    #    self.resume_cnt += 1
-    #  else:
-    #    self.resume_cnt = 0
+    elif CS.out.cruiseState.accActive:
+      btn_signal = self.NaviCtrl.update_main( CS )
+      if btn_signal != None:
+        can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
+        self.resume_cnt += 1
+      else:
+        self.resume_cnt = 0
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.IONIQ, CAR.KIA_NIRO_EV, CAR.KONA_EV,

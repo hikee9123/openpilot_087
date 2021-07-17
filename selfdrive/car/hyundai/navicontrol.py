@@ -17,7 +17,7 @@ MAX_SPEED = 255.0
 MIN_CURVE_SPEED = 30.
 
 
-class CLongControl():
+class NaviControl():
   def __init__(self, p = None ):
     self.p = p
     self.accel_steady = 0
@@ -139,8 +139,6 @@ class CLongControl():
 
     elif CS.is_highway:
       return  cruise_set_speed_kph
-      #decPos =  interp( speedLimit, [90,110], [ 100, 300 ] )
-      #spdTarget = interp( speedLimitDistance, [decPos,1000], [ speedLimit, cruise_set_speed_kph ] )
     else:
       if speedLimit <= 50  and cruise_set_speed_kph <= 80:
         spdTarget = interp( speedLimitDistance, [50,300], [ speedLimit, cruise_set_speed_kph ] )
@@ -158,7 +156,7 @@ class CLongControl():
 
     return  cruise_set_speed_kph
 
-  def update_longctrl(self,  CS ):  
+  def update_main(self,  CS ):  
     # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
     # atom
     self.sm.update(0) 
