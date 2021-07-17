@@ -254,6 +254,19 @@ void CUserPanel::showEvent(QShowEvent *event)
 
 
 
+
+IsOpenpilotViewEnabledToggle::IsOpenpilotViewEnabledToggle() 
+        : ToggleControl("주행화면 미리보기", "오픈파일럿 주행화면을 미리보기 합니다.", "", Params().getBool("IsOpenpilotViewEnabled")) 
+{
+  QObject::connect(this, &IsOpenpilotViewEnabledToggle::toggleFlipped, [=](int state) {
+    char value = state ? '1' : '0';
+
+    QUIState::ui_state.scene.IsOpenpilotViewEnabled = state;
+    Params().put("IsOpenpilotViewEnabled", &value, 1);
+  });
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////////////
 //
 //  CLiveSteerRatioToggle
