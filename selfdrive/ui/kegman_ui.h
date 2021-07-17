@@ -1,7 +1,7 @@
 #include <time.h>
 #include <dirent.h>
 
-
+/*
 static void ui_draw_track(UIState *s, const line_vertices_data &vd) 
 {
   // kegman
@@ -40,7 +40,7 @@ static void ui_draw_track(UIState *s, const line_vertices_data &vd)
   nvgFillPaint(s->vg, track_bg);
   nvgFill(s->vg); 
 }
-
+*/
 
 //BB START: functions added for the display of various items
 static int bb_ui_draw_measure(UIState *s,  const char* bb_value, const char* bb_uom, const char* bb_label,
@@ -381,7 +381,7 @@ static void bb_ui_draw_UI(UIState *s)
   const int bb_dml_x = (s->viz_rect.x + bdr_s);
   const int bb_dml_y = (bdr_s + (bdr_s * 1.5)) + 220;
 
-  const int bb_dmr_w = 170;
+  const int bb_dmr_w = 180;
   const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - (bb_dmr_w/1.5) - (bdr_s * 2.5);
   const int bb_dmr_y = (bdr_s + (bdr_s * 1.5)) + 200;
 
