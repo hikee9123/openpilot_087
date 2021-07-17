@@ -23,7 +23,7 @@
 
 #include "selfdrive/ui/ui.h"
 #include "selfdrive/ui/navi.h"
-//#include "selfdrive/ui/dashcam.h"
+#include "selfdrive/ui/dashcam.h"
 #include "selfdrive/ui/kegman_ui.h"
 
 static void ui_draw_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
@@ -213,7 +213,7 @@ static void ui_draw_vision_speed(UIState *s) {
 }
 
 static void ui_draw_vision_event(UIState *s) {
-  //if (s->scene.engageable) {
+  if (s->scene.engageable) {
     // draw steering wheel
     const int radius = 96;
     const int center_x = s->viz_rect.right() - radius - bdr_s;
@@ -221,12 +221,12 @@ static void ui_draw_vision_event(UIState *s) {
     const QColor &color = bg_colors[s->status];
     NVGcolor nvg_color = nvgRGBA(color.red(), color.green(), color.blue(), color.alpha());
     ui_draw_circle_image(s, center_x, center_y, radius, "wheel", nvg_color, 1.0f);
- // }
+  }
 }
 
 static void ui_draw_vision_face(UIState *s) {
-  const int radius = 96;
-  const int center_x = s->viz_rect.x + radius + (bdr_s * 2);
+  const int radius = 85;
+  const int center_x = s->viz_rect.x + radius + bdr_s;
   const int center_y = s->viz_rect.bottom() - footer_h / 2;
   ui_draw_circle_image(s, center_x, center_y, radius, "driver_face", s->scene.dm_active);
 }

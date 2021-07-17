@@ -29,10 +29,16 @@ int  capture_cnt = 0;
 int  program_start = 1;
 
 
-int get_time()
-{
-  // Get current time (in seconds)
 
+struct tm get_time_struct()
+{
+  time_t t = time(NULL);
+  struct tm tm = *localtime(&t);
+  return tm;
+}
+
+static int get_time()
+{
   int iRet;
   struct timeval tv;
   int seconds = 0;
@@ -45,14 +51,8 @@ int get_time()
   return seconds;
 }
 
-struct tm get_time_struct()
-{
-  time_t t = time(NULL);
-  struct tm tm = *localtime(&t);
-  return tm;
-}
 
-void remove_file(char *videos_dir, char *filename)
+static void remove_file(char *videos_dir, char *filename)
 {
   if (filename[0] == '\0')
   {
@@ -75,7 +75,7 @@ void remove_file(char *videos_dir, char *filename)
   }
 }
 
-void save_file(char *videos_dir, char *filename)
+static  void save_file(char *videos_dir, char *filename)
 {
   if (!strlen(filename))
   {
@@ -89,7 +89,7 @@ void save_file(char *videos_dir, char *filename)
   system(cmd);
 }
 
-void stop_capture() {
+static  void stop_capture() {
   char videos_dir[50] = "/storage/emulated/0/videos";
 
   
@@ -117,7 +117,7 @@ void stop_capture() {
   }
 }
 
-void start_capture()
+static  void start_capture()
 {
   captureState = CAPTURE_STATE_CAPTURING;
   char cmd[128] = "";
@@ -173,27 +173,32 @@ void start_capture()
 }
 
 
-bool screen_button_clicked(int touch_x, int touch_y, int x, int y, int cx, int cy )
+static  bool screen_button_clicked( UIState *s, Rect rect )
 {
-   int   cx_half = cx * 0.5;
-   int   cy_half = cy * 0.5;
+  static int touch_cnt_old = -1 ;
 
-   int min_x = x - cx_half;
-   int min_y = y - cy_half;
-   int max_x = x + cx_half;
-   int max_y = y + cy_half;
+  int x = s->scene.mouse.touch_x;
+  int y = s->scene.mouse.touch_y;
+  int touch_cnt = s->scene.mouse.touch_cnt;
 
-  if (touch_x >= min_x && touch_x <= max_x)
+  if( touch_cnt_old == -1 )
   {
-    if (touch_y >= min_y && touch_y <= max_y)
-    {
-      return true;
-    }
+    touch_cnt_old = touch_cnt;
+    return false
   }
+
+  if( touch_cnt == touch_cnt_old ) return false;
+  touch_cnt_old = touch_cnt;
+
+  if( rect.ptInRect( x, y ) )
+  {
+    return true;
+  }
+
   return false;
 }
 
-void draw_date_time(UIState *s)
+static void draw_date_time(UIState *s)
 {
   // Get local time to display
   char now[50];
@@ -220,7 +225,7 @@ static void rotate_video()
 }
 
 
-void screen_toggle_record_state()
+static void screen_toggle_record_state()
 {
   //if (captureState == CAPTURE_STATE_CAPTURING)
   if( lock_current_video == true )
@@ -261,20 +266,40 @@ static void draw_button( UIState *s, const char* string, Rect rect, NVGcolor fil
     nvgText(s->vg, btn_xc, btn_yc, string, NULL);
 }
 
-static void screen_draw_button(UIState *s, int touch_x, int touch_y, int touched)
+static void screen_draw_button(UIState *s)
 {
   draw_date_time(s);
   // Set button to bottom left of screen
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
 
 
-    int btn_w = 150;
-    int btn_h = 150;
-    int bb_dmr_x = s->viz_rect.x + s->viz_rect.w + 100;
-    int btn_x = bb_dmr_x - btn_w;
-    int btn_y = 1080 - btn_h;    
+ 
+    int bb_dmr_x = s->viz_rect.x + s->viz_rect.w;
 
-  if ( touched && screen_button_clicked(touch_x, touch_y, btn_x, btn_y, btn_w, btn_h) )
+ 
+
+   //btn_dashcam_rec
+  Rect btn_rec = btn_dashcam_rec;
+  NVGcolor fillColor = nvgRGBA(255, 150, 150, 200);
+  NVGcolor txtColor = nvgRGBA(255, 255, 255, 100);
+
+  btn_rec.x = bb_dmr_x;
+
+    if ( lock_current_video == false )
+    {
+       fillColor = nvgRGBA( 50, 50, 100, 200);
+    }
+    else if (captureState == CAPTURE_STATE_CAPTURING)
+    {
+      fillColor = nvgRGBA(255, 0, 0, 150);
+    }
+    else
+    {
+      fillColor = nvgRGBA(255, 150, 150, 200);
+    }
+ 
+   draw_button( s, "REC", btn_rec, fillColor, txtColor ); 
+  if (  screen_button_clicked(s, btn_rec) )
   {
     click_elapsed_time = nCurrTimeSec - click_time;
 
@@ -285,32 +310,6 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y, int touched
       screen_toggle_record_state();
     }
   }  
-
-
-    nvgBeginPath(s->vg);
-    nvgRoundedRect(s->vg, btn_x - 110, btn_y - 45, btn_w, btn_h, 100);
-    nvgStrokeColor(s->vg, nvgRGBA(255, 255, 255, 80));
-    nvgStrokeWidth(s->vg, 6);
-    nvgStroke(s->vg);
-
-    nvgFontSize(s->vg, 60);
-
-    if ( lock_current_video == false )
-    {
-       nvgFillColor(s->vg, nvgRGBA( 50, 50, 100, 200));
-    }
-    else if (captureState == CAPTURE_STATE_CAPTURING)
-    {
-      NVGcolor fillColor = nvgRGBA(255, 0, 0, 150);
-      nvgFillColor(s->vg, fillColor);
-      nvgFill(s->vg);
-      nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
-    }
-    else
-    {
-      nvgFillColor(s->vg, nvgRGBA(255, 150, 150, 200));
-    }
-    nvgText(s->vg, btn_x - 75, btn_y + 50, "REC", NULL);
 
 
   if (captureState == CAPTURE_STATE_CAPTURING)
@@ -337,7 +336,7 @@ static void screen_draw_button(UIState *s, int touch_x, int touch_y, int touched
 
 
 
-int get_param( const std::string &key )
+static  int get_param( const std::string &key )
 {
     auto str = QString::fromStdString(Params().get( key ));
     int value = str.toInt();
@@ -347,7 +346,7 @@ int get_param( const std::string &key )
 
 
 
-void update_dashcam(UIState *s, int draw_vision)
+static void update_dashcam(UIState *s, int draw_vision)
 {
   nCurrTimeSec =  get_time();
   if (!s->awake) return;
@@ -355,16 +354,11 @@ void update_dashcam(UIState *s, int draw_vision)
   if ( program_start )
   {
     program_start = 0;
-
     s->scene.scr.autoFocus = get_param("OpkrAutoFocus");
     s->scene.scr.autoScreenOff = get_param("OpkrAutoScreenOff");
     s->scene.scr.brightness = get_param("OpkrUIBrightness");
 
     s->scene.scr.nTime = s->scene.scr.autoScreenOff * 60 * UI_FREQ;
-  }
-  else if ( touched  ) 
-  {
-    s->scene.mouse.touched = 0; 
   }
 
 
@@ -372,7 +366,7 @@ void update_dashcam(UIState *s, int draw_vision)
   if (!s->scene.started) return;
 
 
-  screen_draw_button(s, touch_x, touch_y, touched);
+  screen_draw_button(s);
 
 
   if( lock_current_video == true  )
