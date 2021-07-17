@@ -52,7 +52,7 @@ const int header_h = 420;
 const int footer_h = 280;
 const int UI_FREQ = 20;   // Hz
 
-const Rect btn_dashcam_rec = {1645, 905, 140, 140};
+const Rect btn_dashcam_rec = {1745, 905, 140, 140};
 
 typedef enum UIStatus {
   STATUS_DISENGAGED,
