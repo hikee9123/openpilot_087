@@ -200,7 +200,7 @@ static void ui_draw_vision_maxspeed(UIState *s) {
     const std::string maxspeed_str = std::to_string((int)std::nearbyint(maxspeed));
     ui_draw_text(s, rect.centerX(), 242, maxspeed_str.c_str(), 48 * 2.5, COLOR_WHITE, "sans-bold");
   } else {
-    ui_draw_text(s, rect.centerX(), 230, "N/A", 42 * 1.5, COLOR_WHITE_ALPHA(100), "sans-semibold");
+    ui_draw_text(s, rect.centerX(), 220, "N/A", 42 * 1.5, COLOR_WHITE_ALPHA(100), "sans-semibold");
   }
 }
 

@@ -96,9 +96,9 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
   int bb_uom_dx =  (int)(bb_w /2 - uom_fontSize*2.5) ;
 
 
-  auto  maxCpuTemp = scene->deviceState.getCpuTempC();
-  //auto  maxGpuTemp = scene->deviceState.getGpuTempC();
-  float  batteryTemp = scene->deviceState.getBatteryTempC();
+
+
+
 
   //add CPU temperature
   if( true ) 
@@ -106,8 +106,11 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     char val_str[16];
     char uom_str[6];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
+
+    auto  maxCpuTemp = scene->deviceState.getCpuTempC();
+    float  cpuPerc = scene->deviceState.getCpuUsagePercent();    
     float cpuTemp = maxCpuTemp[0];
-    float  cpuPerc = scene->deviceState.getCpuUsagePercent();
+
 
       if( cpuTemp > 80) {
         val_color = nvgRGBA(255, 188, 3, 200);
@@ -127,13 +130,40 @@ static void bb_ui_draw_measures_right(UIState *s, int bb_x, int bb_y, int bb_w )
     bb_ry = bb_y + bb_h;
   }
 
+  //add GPU temperature
+  if( true ) 
+  {
+    char val_str[16];
+    char uom_str[6];
+    NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
+    float  maxGpuTemp = scene->deviceState.getGpuTempC();
+    float  memTemp = scene->deviceState.memoryTempC
+    
+      if( cpuTemp > 80) {
+        val_color = nvgRGBA(255, 188, 3, 200);
+      }
+      if(cpuTemp > 92) {
+        val_color = nvgRGBA(255, 0, 0, 200);
+      }
+
+       // temp is alway in C * 10
+      snprintf(val_str, sizeof(val_str), "%.1f", maxGpuTemp );
+      snprintf(uom_str, sizeof(uom_str), "%.0f", memTemp);
+      bb_h +=bb_ui_draw_measure(s,  val_str, uom_str, "GPU TEMP",
+        bb_rx, bb_ry, bb_uom_dx,
+        val_color, lab_color, uom_color,
+        value_fontSize, label_fontSize, uom_fontSize );
+
+    bb_ry = bb_y + bb_h;
+  } 
+
    //add battery temperature
   if( true )
   {
     char val_str[16];
     char uom_str[6];
     NVGcolor val_color = nvgRGBA(255, 255, 255, 200);
-   // float batteryTemp = scene->maxBatTemp;
+    float  batteryTemp = scene->deviceState.getBatteryTempC();
 
     if(batteryTemp > 40) {
       val_color = nvgRGBA(255, 188, 3, 200);

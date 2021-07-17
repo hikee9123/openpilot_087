@@ -270,9 +270,9 @@ static void screen_draw_button(UIState *s)
 {
   draw_date_time(s);
   // Set button to bottom left of screen
-  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
  
-  //int bb_dmr_x = s->viz_rect.x + s->viz_rect.w;
+
   const int bb_dmr_w = 180;
   const int bb_dmr_x = s->viz_rect.x + s->viz_rect.w - bb_dmr_w - bdr_s;
 
