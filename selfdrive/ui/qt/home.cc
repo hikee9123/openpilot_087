@@ -68,7 +68,7 @@ void HomeWindow::showDriverView(bool show) {
 void HomeWindow::mouseEventLatch(QMouseEvent* e) {
   int e_x = e->x();
   int e_y = e->y();
-  int e_button= e->button();
+  //int e_button= e->button();
   bool bSidebar = sidebar->isVisible();
 
   QUIState::ui_state.scene.scr.sidebar = bSidebar;
