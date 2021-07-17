@@ -57,7 +57,7 @@ protected:
   void mousePressEvent(QMouseEvent* e) override;
 
 private:
-  void  mouseEventLatch(QMouseEvent* e);
+  int  mouseEventLatch(QMouseEvent* e);
 
 private:
   Sidebar *sidebar;
