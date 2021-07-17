@@ -30,11 +30,14 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
   auto updateBtn = new ButtonControl("업데이트 체크 및 적용", "업데이트");
   QObject::connect(updateBtn, &ButtonControl::released, [=]() 
   { 
-    const char* gitcommit = "/data/openpilot/gitcommit.sh";
-    const char* gitpull = "/data/openpilot/gitpull.sh";
+    const char* gitcommit = "/data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh";
+    const char* gitpull = "/data/openpilot/selfdrive/assets/addon/sh/gitpull.sh";
 
-    std::system("chmod 777 /data/openpilot/gitcommit.sh");
-    std::system("chmod 777 /data/openpilot/gitpull.sh");
+        //   std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/apk/apk.py");
+        //    std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh");
+
+   // std::system("chmod 777 /data/openpilot/gitcommit.sh");
+   // std::system("chmod 777 /data/openpilot/gitpull.sh");
     
 
     std::system( gitcommit );
@@ -76,7 +79,7 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
   { 
         if (ConfirmationDialog::confirm("GitPull 이전 상태로 되돌립니다. 진행하시겠습니까?", this))
         {
-          const char* gitpull_cancel = "/data/openpilot/gitpull_cancel.sh ''";
+          const char* gitpull_cancel = "/data/openpilot/selfdrive/assets/addon/sh/gitpull_cancel.sh ''";
           std::system(gitpull_cancel);
         }
   });  
@@ -196,41 +199,41 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
                                    "NAVI 을 실행 합니다.");
   connect(tmapopen_exe, &ButtonControl::released, [=]() 
   { 
-          if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Open)?", this)) 
-          {
+         // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Open)?", this)) 
+         // {
             Params().put("OpkrMapEnable", "1");
-          }
+          //}
   });
 
-  auto tmapopen2_exe = new ButtonControl("NAVI2 Open", "Open",
+  auto tmapopen2_exe = new ButtonControl("NAVI Overlay", "Open",
                                    "NAVI2 실행후 Overlay mode로 변경합니다.");
   connect(tmapopen2_exe, &ButtonControl::released, [=]() 
   { 
-        if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI2 Open)?", this)) 
-        {
+       // if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI2 Open)?", this)) 
+       // {
           Params().put("OpkrMapEnable", "2");
-        }
+       // }
   });  
 
   auto tmapclose_exe = new ButtonControl("NAVI Close", "Close",
                                    "NAVI 을 Close 합니다.");
   connect(tmapclose_exe, &ButtonControl::released, [=]() 
   { 
-          if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Close)?", this)) 
-          {
+          //if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Close)?", this)) 
+          //{
             Params().put("OpkrMapEnable", "0");
-          }
+          //}
   });
 
   auto softkey_exe = new ButtonControl("Soft Key Open", "Open",
                                    "Soft Key 을 실행 합니다.");
   connect(softkey_exe, &ButtonControl::released, [=]() 
   { 
-          if (ConfirmationDialog::confirm("Are you sure you want to exec(Soft Key)?", this)) 
-          {
+         // if (ConfirmationDialog::confirm("Are you sure you want to exec(Soft Key)?", this)) 
+          //{
             //std::system("pm enable com.gmd.hidesoftkeys")
             std::system("am start com.gmd.hidesoftkeys/com.gmd.hidesoftkeys.MainActivity");
-          }
+          //}
   });  
 
   for (auto btn : {car_interfaces, build_exe, finger_exe, android_exe, apk_exe, mixplorer_exe, tmapopen_exe, tmapopen2_exe, tmapclose_exe, softkey_exe}) {
