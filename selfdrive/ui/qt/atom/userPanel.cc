@@ -170,11 +170,11 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
           if (ConfirmationDialog::confirm("Are you sure you want to exec(apk.py)?", this)) 
           {
             std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/apk/apk.py");
-            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/apk/gitcommit.sh");
-            std::system("chmod 777 /data/openpilot/panda_flashing.sh");
-            std::system("chmod 777 /data/openpilot/gitpull.sh");
-            std::system("chmod 777 /data/openpilot/gitpull_cancel.sh");
-            std::system("chmod 777 /data/openpilot/run_mixplorer.sh");
+            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh");
+            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/panda_flashing.sh");
+            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/gitpull.sh");
+            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/gitpull_cancel.sh");
+            std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/run_mixplorer.sh");
             std::system("python /data/openpilot/selfdrive/assets/addon/apk/apk.py");
           }
   });
@@ -183,11 +183,13 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
                                    "run_mixplorer.sh 을 실행 합니다.");
   connect(mixplorer_exe, &ButtonControl::released, [=]() 
   { 
-          if (ConfirmationDialog::confirm("Are you sure you want to exec(com.mixplorer)?", this)) 
-          {
-              std::system("/data/openpilot/run_mixplorer.sh");
+        //  if (ConfirmationDialog::confirm("Are you sure you want to exec(com.mixplorer)?", this)) 
+        //  {
+              //std::system("/data/openpilot/run_mixplorer.sh");
+              std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
+              
             
-          }
+         // }
   });
 
   auto tmapopen_exe = new ButtonControl("NAVI Open", "Open",
