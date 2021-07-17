@@ -45,7 +45,7 @@ class NaviControl():
 
 
   def update_btn(self, CS ): 
-    if CS.driverOverride == 2 or not CS.acc_active or CS.cruise_buttons == Buttons.RES_ACCEL or CS.cruise_buttons == Buttons.SET_DECEL or CS.cruise_buttons == Buttons.CANCEL: 
+    if not CS.acc_active or CS.cruise_buttons != Buttons.NONE: 
       self.wait_timer2 = 50 
     elif self.wait_timer2: 
       self.wait_timer2 -= 1
