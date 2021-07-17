@@ -74,6 +74,7 @@ class CarState(CarStateBase):
     ret.steerWarning = cp.vl["MDPS12"]["CF_Mdps_ToiUnavail"] != 0 or cp.vl["MDPS12"]["CF_Mdps_ToiFlt"] != 0
 
     # cruise state
+    self.VSetDis = cp.vl["SCC11"]["VSetDis"]
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
     ret.cruiseState.accActive = self.acc_active
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
@@ -89,7 +90,7 @@ class CarState(CarStateBase):
 
     if self.acc_active:
       speed_conv = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] else CV.KPH_TO_MS
-      ret.cruiseState.speed = cp.vl["SCC11"]["VSetDis"] * speed_conv
+      ret.cruiseState.speed = self.VSetDis * speed_conv
     else:
       ret.cruiseState.speed = 0
 
