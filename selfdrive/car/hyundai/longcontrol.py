@@ -8,7 +8,7 @@ from selfdrive.car.hyundai.hyundaican import create_scc11, create_scc12
 from selfdrive.car.hyundai.values import Buttons
 from selfdrive.controls.lib.lane_planner import TRAJECTORY_SIZE
 from common.numpy_fast import clip, interp
-
+import cereal.messaging as messaging
 
 import common.log as trace1
 
@@ -40,27 +40,8 @@ class CLongControl():
     self.curve_speed = 0
     self.curvature_gain = 1
 
+    self.sm = messaging.SubMaster(['liveNaviData'])
 
-
-  def reset( self, CS ):
-    self.scc12_cnt = CS.scc12["CR_VSM_Alive"] + 1     
-
-  def accel_hysteresis( self, accel, accel_steady):
-    # for small accel oscillations within ACCEL_HYST_GAP, don't change the accel command
-    if accel > accel_steady + self.p.ACCEL_HYST_GAP:
-      accel_steady = accel - self.p.ACCEL_HYST_GAP
-    elif accel < accel_steady - self.p.ACCEL_HYST_GAP:
-      accel_steady = accel + self.p.ACCEL_HYST_GAP
-      accel = accel_steady
-
-    return accel, accel_steady
-
-  def accel_applay( self, actuators):
-    # gas and brake
-    apply_accel = actuators.gas - actuators.brake
-    apply_accel, self.accel_steady = self.accel_hysteresis(apply_accel, self.accel_steady)
-    apply_accel = clip(apply_accel * self.p.ACCEL_SCALE, self.p.ACCEL_MIN, self.p.ACCEL_MAX)
-    return  apply_accel
 
 
 
@@ -74,85 +55,6 @@ class CLongControl():
     return 0
 
 
-  def update_cruiseSW(self, CS ):
-    set_speed_kph = self.cruise_set_speed_kph
-    delta_vsetdis = 0
-    if CS.acc_active:
-        delta_vsetdis = abs(CS.VSetDis - self.prev_VSetDis)            
-        if self.prev_clu_CruiseSwState != CS.cruise_buttons:
-          if CS.cruise_buttons:
-            self.prev_VSetDis = int(CS.VSetDis)
-          elif CS.driverOverride:
-            set_speed_kph = int(CS.VSetDis)          
-          elif self.prev_clu_CruiseSwState == Buttons.RES_ACCEL:   # up 
-            if self.curise_set_first:
-                self.curise_set_first = 0
-                set_speed_kph =  int(CS.VSetDis)
-            elif delta_vsetdis > 5:
-                set_speed_kph = CS.VSetDis
-            elif not self.curise_sw_check:
-                set_speed_kph += 1
-          elif self.prev_clu_CruiseSwState == Buttons.SET_DECEL:  # dn
-            if self.curise_set_first:
-                self.curise_set_first = 0
-                set_speed_kph = int(CS.clu_Vanz)
-            elif delta_vsetdis > 5:
-                set_speed_kph = int(CS.VSetDis)
-            elif not self.curise_sw_check:
-                set_speed_kph -= 1
-
-          self.prev_clu_CruiseSwState = CS.cruise_buttons
-        elif CS.cruise_buttons and delta_vsetdis > 0:
-          self.curise_sw_check = True
-          set_speed_kph = int(CS.VSetDis)
-    else:
-        self.curise_sw_check = False
-        self.curise_set_first = 1
-        self.prev_VSetDis = int(CS.VSetDis)
-        set_speed_kph = CS.VSetDis
-        if not CS.acc_active and self.prev_clu_CruiseSwState != CS.cruise_buttons:  # MODE GAP
-          if CS.cruise_buttons == Buttons.GAP_DIST: 
-            self.cruise_set_mode += 1
-          if self.cruise_set_mode > 4:
-            self.cruise_set_mode = 0
-          self.prev_clu_CruiseSwState = CS.cruise_buttons
-
-
-    if set_speed_kph < 30:
-      set_speed_kph = 30
-
-    self.cruise_set_speed_kph = set_speed_kph
-    return self.cruise_set_mode, set_speed_kph
-
-
-
-  def update( self, packer, CS, c, frame ):
-    enabled = CS.acc_active
-    kph_vEgo = CS.out.vEgo * CV.MS_TO_KPH    
-    # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
-    actuators = c.actuators
-    set_speed = c.hudControl.setSpeed
-    lead_visible = c.hudControl.leadVisible
-    stopping = kph_vEgo <= 1
-    apply_accel = self.accel_applay(  actuators )
-    scc_live = True
-
-    #if kph_vEgo < 30:
-    #  apply_accel = min( apply_accel, CS.aReqValue )
-    if CS.aReqValue > apply_accel:
-      apply_accel = apply_accel
-    else:
-      apply_accel = CS.aReqValue
-      self.scc12_cnt += 1
-      return None
-    
-    can_sends = create_scc12(packer, apply_accel, enabled, self.scc12_cnt, scc_live, CS.scc12)
-    can_sends.append( create_scc11(packer, frame, enabled, set_speed, lead_visible, scc_live, CS.scc11) )
-    self.scc12_cnt += 1 
-
-    str_log2 = 'accel={:.3f}  speed={:.0f} lead={} stop={:.0f}'.format( apply_accel, set_speed,  lead_visible, stopping )
-    trace1.printf3( '{}'.format( str_log2 ) )
-    return can_sends
 
 
   # buttn acc,dec control
@@ -214,10 +116,62 @@ class CLongControl():
       return btn_signal
 
 
-  def update_scc( self, CS, set_speed ):
+  def update_ascc( self, CS, set_speed ):
     self.set_point = max(30,set_speed)
     self.curr_speed = CS.out.vEgo * CV.MS_TO_KPH
     self.VSetDis   = CS.VSetDis
     btn_signal = self.switch( self.seq_command )
+
+    return btn_signal
+
+
+  def update_navi(self, sm, CS ):
+    v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH    
+    cruise_set_speed_kph = self.cruise_set_speed_kph
+    self.liveNaviData = sm['liveNaviData']    
+    speedLimit = self.liveNaviData.speedLimit
+    speedLimitDistance = self.liveNaviData.speedLimitDistance
+    safetySign  = self.liveNaviData.safetySign
+    mapValid = self.liveNaviData.mapValid
+    trafficType = self.liveNaviData.trafficType
+    
+    if not mapValid or trafficType == 0:
+      return  cruise_set_speed_kph
+
+    elif CS.is_highway:
+      return  cruise_set_speed_kph
+      #decPos =  interp( speedLimit, [90,110], [ 100, 300 ] )
+      #spdTarget = interp( speedLimitDistance, [decPos,1000], [ speedLimit, cruise_set_speed_kph ] )
+    else:
+      if speedLimit <= 50  and cruise_set_speed_kph <= 80:
+        spdTarget = interp( speedLimitDistance, [50,300], [ speedLimit, cruise_set_speed_kph ] )
+      elif  cruise_set_speed_kph <= 100:
+        nCenter300 = min( cruise_set_speed_kph, speedLimit + 10 )
+        spdTarget = interp( speedLimitDistance, [50, 250, 600], [ speedLimit,  nCenter300, cruise_set_speed_kph ] )      
+      else:
+        nCenter300 = min( cruise_set_speed_kph, speedLimit + 10 )
+        spdTarget = interp( speedLimitDistance, [100, 300, 600], [ speedLimit,  nCenter300, cruise_set_speed_kph ] )
+    
+    if v_ego_kph < speedLimit:
+      v_ego_kph = speedLimit
+
+    cruise_set_speed_kph = min( spdTarget, v_ego_kph )
+
+    return  cruise_set_speed_kph
+
+  def update_longctrl(self,  CS ):  
+    # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
+    # atom
+    self.sm.update(0) 
+
+    btn_signal = None
+    self.cruise_set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
+    if self.update_btn( CS  ) == 0:
+      pass
+    elif CS.acc_active:
+      kph_set_vEgo = self.update_navi(  self.sm , CS )
+      self.ctrl_speed = min( self.cruise_set_speed_kph, kph_set_vEgo)
+      btn_signal = self.update_ascc( CS, self.ctrl_speed )      
+ 
 
     return btn_signal

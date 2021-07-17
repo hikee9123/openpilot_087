@@ -143,6 +143,8 @@ class CarState(CarStateBase):
     self.prev_cruise_buttons = self.cruise_buttons
     self.cruise_buttons = cp.vl["CLU11"]["CF_Clu_CruiseSwState"]
 
+
+    self.is_highway = cp.vl["SCC11"]["Navi_SCC_Camera_Act"] != 0.
     if ret.gearShifter != GearShifter.drive or ret.seatbeltUnlatched or ret.doorOpen:
       self.enable_status = False
     else:
@@ -219,6 +221,7 @@ class CarState(CarStateBase):
       ("ACC_ObjDist", "SCC11", 0),
       ("ACCMode", "SCC12", 1),
 
+      ("Navi_SCC_Camera_Act", "SCC11", 0),
       ("TauGapSet", "SCC11", 4),      
     ]
 

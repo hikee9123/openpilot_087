@@ -5,6 +5,8 @@ from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create
 from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR
 from opendbc.can.packer import CANPacker
 
+from selfdrive.car.hyundai.longcontrol  import CLongControl
+
 VisualAlert = car.CarControl.HUDControl.VisualAlert
 
 
@@ -41,10 +43,23 @@ class CarController():
     self.car_fingerprint = CP.carFingerprint
     self.steer_rate_limited = False
     self.last_resume_frame = 0
-    self.lkas11_cnt = 0    
+    self.resume_cnt = 0
+    self.last_lead_distance = 0
+    self.lkas11_cnt = 0
 
-  def update(self, enabled, CS, frame, actuators, pcm_cancel_cmd, visual_alert,
-             left_lane, right_lane, left_lane_depart, right_lane_depart):
+    self.longCtrl = CLongControl(self.p)    
+
+
+  def update(self, c, CS, frame ):
+    enabled = c.enabled
+    actuators = c.actuators
+    pcm_cancel_cmd = c.cruiseControl.cancel
+    visual_alert = c.hudControl.visualAlert
+    left_lane = c.hudControl.leftLaneVisible 
+    right_lane = c.hudControl.rightLaneVisible 
+    left_lane_depart = c.hudControl.leftLaneDepart 
+    right_lane_depart = c.hudControl.rightLaneDepart
+    
     # Steering Torque
     new_steer = int(round(actuators.steer * self.p.STEER_MAX))
     apply_steer = apply_std_steer_torque_limits(new_steer, self.apply_steer_last, CS.out.steeringTorque, self.p)
@@ -79,11 +94,30 @@ class CarController():
     if pcm_cancel_cmd:
       can_sends.append(create_clu11(self.packer, frame, CS.clu11, Buttons.CANCEL))
     elif CS.out.cruiseState.standstill:
-      # send resume at a max freq of 10Hz
-      if (frame - self.last_resume_frame) * DT_CTRL > 0.1:
-        # send 25 messages at a time to increases the likelihood of resume being accepted
-        can_sends.extend([create_clu11(self.packer, frame, CS.clu11, Buttons.RES_ACCEL)] * 25)
-        self.last_resume_frame = frame
+      # run only first time when the car stopped
+      if self.last_lead_distance == 0:  
+        # get the lead distance from the Radar
+        self.last_lead_distance = CS.lead_distance
+        self.resume_cnt = 0
+      # when lead car starts moving, create 6 RES msgs
+      elif CS.lead_distance != self.last_lead_distance and (frame - self.last_resume_frame) > 5:
+        can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, Buttons.RES_ACCEL))
+        self.resume_cnt += 1
+        # interval after 6 msgs
+        if self.resume_cnt > 5:
+          self.last_resume_frame = frame
+          self.resume_cnt = 0
+    # reset lead distnce after the car starts moving          
+    elif self.last_lead_distance != 0:
+      self.last_lead_distance = 0
+
+    #elif CS.out.cruiseState.accActive:
+    #  btn_signal = self.longCtrl.update_longctrl( CS, sm )
+    #  if btn_signal != None:
+    #    can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
+    #    self.resume_cnt += 1
+    #  else:
+    #    self.resume_cnt = 0
 
     # 20 Hz LFA MFA message
     if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.IONIQ, CAR.KIA_NIRO_EV, CAR.KONA_EV,
