@@ -343,7 +343,7 @@ static  int get_param( const std::string &key )
 
 
 
-static void update_dashcam(UIState *s, int draw_vision)
+static void update_dashcam(UIState *s)
 {
   nCurrTimeSec =  get_time();
   if (!s->awake) return;
@@ -354,12 +354,11 @@ static void update_dashcam(UIState *s, int draw_vision)
     s->scene.scr.autoFocus = get_param("OpkrAutoFocus");
     s->scene.scr.autoScreenOff = get_param("OpkrAutoScreenOff");
     s->scene.scr.brightness = get_param("OpkrUIBrightness");
-
     s->scene.scr.nTime = s->scene.scr.autoScreenOff * 60 * UI_FREQ;
   }
 
 
-  if (!draw_vision) return;
+
   if (!s->scene.started) return;
 
 

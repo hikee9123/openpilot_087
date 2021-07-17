@@ -297,9 +297,11 @@ void ui_draw(UIState *s, int w, int h) {
 
   if (draw_vision) {
     ui_draw_vision(s);
+    update_dashcam(s);    
   }
   
   ui_main_navi( s );
+
   nvgEndFrame(s->vg);
   glDisable(GL_BLEND);
 }
