@@ -206,7 +206,7 @@ static void draw_date_time(UIState *s)
   snprintf(now, sizeof(now), "%04d/%02d/%02d  %02d:%02d:%02d", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 
 
-  nvgFontSize(s->vg, 60);
+  nvgFontSize(s->vg, 30);
   nvgFontFace(s->vg, "sans-semibold");
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 200));
 
