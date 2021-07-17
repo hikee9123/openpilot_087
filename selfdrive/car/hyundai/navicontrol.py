@@ -13,38 +13,25 @@ import common.log as trace1
 
 
 
-MAX_SPEED = 255.0
-MIN_CURVE_SPEED = 30.
 
 
 class NaviControl():
   def __init__(self, p = None ):
     self.p = p
-    self.accel_steady = 0
-    self.scc12_cnt = 0
     
+    self.sm = messaging.SubMaster(['liveNaviData']) 
+
     self.btn_cnt = 0
     self.seq_command = 0
     self.target_speed = 0
     self.set_point = 0
     self.wait_timer2 = 0
-
-    self.prev_clu_CruiseSwState = 0       
-    self.prev_VSetDis  = 0
-    self.curise_set_first = 0
-    self.curise_sw_check = False
-    self.cruise_set_mode = 1      # 초기 선택 모델.
     self.cruise_set_speed_kph = 30
 
-    self.curve_speed = 0
-    self.curvature_gain = 1
-
-    self.sm = messaging.SubMaster(['liveNaviData'])
 
 
 
-
-  def update_btn(self, CS ): 
+  def button_status(self, CS ): 
     if not CS.acc_active or CS.cruise_buttons != Buttons.NONE: 
       self.wait_timer2 = 50 
     elif self.wait_timer2: 
@@ -115,7 +102,7 @@ class NaviControl():
       return btn_signal
 
 
-  def update_ascc( self, CS, set_speed ):
+  def ascc_button_control( self, CS, set_speed ):
     self.set_point = max(30,set_speed)
     self.curr_speed = CS.out.vEgo * CV.MS_TO_KPH
     self.VSetDis   = CS.VSetDis
@@ -124,7 +111,7 @@ class NaviControl():
     return btn_signal
 
 
-  def update_navi(self, sm, CS ):
+  def get_navi_speed(self, sm, CS ):
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH    
     cruise_set_speed_kph = self.cruise_set_speed_kph
     self.liveNaviData = sm['liveNaviData']    
@@ -140,14 +127,12 @@ class NaviControl():
     elif CS.is_highway:
       return  cruise_set_speed_kph
     else:
-      if speedLimit <= 50  and cruise_set_speed_kph <= 80:
-        spdTarget = interp( speedLimitDistance, [50,300], [ speedLimit, cruise_set_speed_kph ] )
-      elif  cruise_set_speed_kph <= 100:
-        nCenter300 = min( cruise_set_speed_kph, speedLimit + 10 )
-        spdTarget = interp( speedLimitDistance, [50, 250, 600], [ speedLimit,  nCenter300, cruise_set_speed_kph ] )      
+      if speedLimit <= 50:
+        spdTarget = interp( speedLimitDistance, [50,600], [ speedLimit, speedLimit + 50 ] )
+      elif  speedLimit <= 100:
+        spdTarget = interp( speedLimitDistance, [50, 250, 600], [ speedLimit,  speedLimit+10, speedLimit+20 ] )      
       else:
-        nCenter300 = min( cruise_set_speed_kph, speedLimit + 10 )
-        spdTarget = interp( speedLimitDistance, [100, 300, 600], [ speedLimit,  nCenter300, cruise_set_speed_kph ] )
+        spdTarget = interp( speedLimitDistance, [100, 300, 600], [ speedLimit,  speedLimit+10, speedLimit+20 ] )
     
     if v_ego_kph < speedLimit:
       v_ego_kph = speedLimit
@@ -163,12 +148,12 @@ class NaviControl():
 
     btn_signal = None
     self.cruise_set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
-    if self.update_btn( CS  ) == 0:
+    if self.button_status( CS  ) == 0:
       pass
     elif CS.acc_active:
-      kph_set_vEgo = self.update_navi(  self.sm , CS )
+      kph_set_vEgo = self.get_navi_speed(  self.sm , CS )
       self.ctrl_speed = min( self.cruise_set_speed_kph, kph_set_vEgo)
-      btn_signal = self.update_ascc( CS, self.ctrl_speed )      
+      btn_signal = self.ascc_button_control( CS, self.ctrl_speed )      
  
 
     return btn_signal
