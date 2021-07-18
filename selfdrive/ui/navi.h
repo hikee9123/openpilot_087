@@ -78,7 +78,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
       int img_size = 200;   // 472
       int img_xpos = s->viz_rect.x + bdr_s*2 + 184 + 20;
-      int img_ypos = s->viz_rect.y + bdr_s;
+      int img_ypos = s->viz_rect.y + bdr_s - 20;
       float img_alpha = 0.3f;
 
       // 1. text
@@ -104,7 +104,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
 
       if( szSign )
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+50, szSign, 25, COLOR_WHITE, "sans-bold");      
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+20, szSign, 25, COLOR_WHITE, "sans-bold");      
 
 }
 
