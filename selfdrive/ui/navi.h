@@ -32,11 +32,11 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     const char *traffic_sign = NULL;
     const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn"};
 
-    char  *szSign = NULL;
+    const char  *szSign = NULL;
     int  nTrafficSign = int( map_sign );
 
     if( nTrafficSign == 113 ) traffic_sign = name_sped[10];  // 굽은도로
-    else if( nTrafficSign == 195 ) { traffic_sign = name_sped[0];  szSign = "가변"; } // 가변 단속. ( by opkr)
+    else if( nTrafficSign == 195 ) traffic_sign = name_sped[0];  // 가변 단속. ( by opkr)
     else if( speedLimit <= 10 )  traffic_sign = NULL;
     else if( speedLimit <= 30 )  traffic_sign = name_sped[1];
     else if( speedLimit <= 40 )  traffic_sign = name_sped[2];
@@ -48,6 +48,27 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     else if( speedLimit <= 100 )  traffic_sign = name_sped[8];
     else if( speedLimit <= 110 )  traffic_sign = name_sped[9];
   
+  /*
+   111 : 우측 커브 
+   112 : 윈쪽 커브
+   113 : 굽은도로
+   118, 127 : 어린이보호구역
+   122 : 좁아지는 도로
+   124 : 과속방지턱
+   129 : 주정차
+   195 : 가변단속구간.
+
+   131 : 단속카메라(신호위반카메라)
+   165 : 구간단속
+   200 : 단속구간(고정형 이동식)
+   231 : 단속(카메라, 신호위반)
+   248 : 교통정보수집
+*/
+    if( nTrafficSign == 195 ) szSign = "가변";
+    else if( nTrafficSign == 165 ) szSign = "구간";
+    else if( nTrafficSign == 131 ) szSign = "카메라";
+    else if( nTrafficSign == 248 ) szSign = "교통정보";
+
     if( traffic_sign == NULL )  return;
 
       int img_size = 200;   // 472
