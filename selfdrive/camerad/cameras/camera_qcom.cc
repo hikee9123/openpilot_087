@@ -867,7 +867,7 @@ static std::optional<float> get_accel_z(SubMaster *sm) {
 }
 
 
-static int lens_true_pos() {
+static int lens_truepos() {
 {
   // atom
   static  int autoFocus = 0;
@@ -907,7 +907,7 @@ static void do_autofocus(CameraState *s, SubMaster *sm) {
   int target = std::clamp(lens_true_pos - sag, float(LP3_AF_DAC_DOWN), float(LP3_AF_DAC_UP));
 
 
-  int autoFocus = lens_true_pos();
+  int autoFocus = lens_truepos();
   if( autoFocus )
     lens_true_pos = autoFocus;
 
