@@ -54,7 +54,7 @@ class CarState(CarStateBase):
     else:
       self.cruise_buttons_time = 0
        
-    str_log1 = 'torg:{:5.0f} steer={:5.0f} '.format( self.cruise_buttons, self.cruise_buttons_time  )
+    str_log1 = 'torg:{:5.0f} steer={:5.0f}  cruise={:.0f}'.format( self.cruise_buttons, self.cruise_buttons_time , self.cruise_set_speed_kph )
     trace1.printf3( '  {}'.format( str_log1 ) )
      
     if self.prev_clu_CruiseSwState == self.cruise_buttons:
