@@ -30,10 +30,10 @@ static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
 static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  float speedLimitAheadDistance ) 
 {
     const char *traffic_sign = NULL;
-    const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn"};
+    const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn", "img_space"};
 
-    char  szSignal[50];
-    const char  *szSign = szSignal;
+
+    const char  *szSign = NULL;
 
     int  nTrafficSign = int( map_sign );
 
@@ -49,30 +49,8 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     else if( speedLimit <= 90 )  traffic_sign = name_sped[7];
     else if( speedLimit <= 100 )  traffic_sign = name_sped[8];
     else if( speedLimit <= 110 )  traffic_sign = name_sped[9];
+    else traffic_sign = name_sped[11];
   
-  /*
-   111 : 우측 커브 
-   112 : 윈쪽 커브
-   113 : 굽은도로
-   118, 127 : 어린이보호구역
-   122 : 좁아지는 도로
-   124 : 과속방지턱
-   129 : 주정차
-   195 : 가변단속구간.
-
-   131 : 단속카메라(신호위반카메라)
-   165 : 구간단속
-   200 : 단속구간(고정형 이동식)
-   231 : 단속(카메라, 신호위반)
-   248 : 교통정보수집
-*/
-    
-    if( nTrafficSign == 195 ) szSign = "가변구간";
-    else if( nTrafficSign == 165 ) szSign = "구간단속";
-    else if( nTrafficSign == 131 ) szSign = "신호위반";
-    else if( nTrafficSign == 248 ) szSign = "교통정보";
-    else if( nTrafficSign == 200 ) szSign = "이동식";
-    else sprintf(szSignal,"[%d]", nTrafficSign );
 
 
     int img_size = 200;   // 472
@@ -80,9 +58,9 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     int img_ypos = s->viz_rect.y + bdr_s - 20;
 
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-    if( traffic_sign  )  
+      // 1. text  Distance
+    if( speedLimitAheadDistance >= 5 )
     {
-      // 1. text
       float img_alpha = 0.3f;      
       char  szSLD[50];
       if( speedLimitAheadDistance >= 1000 )
@@ -99,12 +77,51 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       ui_text(s, rect.centerX(), rect.centerY()+15, szSLD, 40, COLOR_WHITE, "sans-bold");
-      // 2. image
+    }
+
+    // 2. image
+    if( traffic_sign  )  
+    {
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
     }
 
+
+
+  /*
+   111 : 우측 커브 
+   112 : 윈쪽 커브
+   113 : 굽은도로
+   118, 127 : 어린이보호구역
+   122 : 좁아지는 도로
+   124 : 과속방지턱
+   129 : 주정차
+   195 : 가변단속구간.
+
+   131 : 단속카메라(신호위반카메라)
+   165 : 구간단속
+   200 : 단속구간(고정형 이동식)
+   231 : 단속(카메라, 신호위반)
+   248 : 교통정보수집
+*/
+
+    char  szSignal[50];
+
+    if( nTrafficSign == 195 ) szSign = "가변구간";
+    else if( nTrafficSign == 165 ) szSign = "구간단속";
+    else if( nTrafficSign == 131 ) szSign = "신호위반";
+    else if( nTrafficSign == 248 ) szSign = "교통정보";
+    else if( nTrafficSign == 200 ) szSign = "이동식";
+    else sprintf(szSignal,"%d", nTrafficSign );
+
+
       if( szSign )
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 25, COLOR_WHITE, "sans-bold");      
+      {
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 26, COLOR_WHITE, "sans-bold"); 
+      }
+      else
+      {
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+ int(img_size*0.5), szSignal, 70, COLOR_WHITE, "sans-bold"); 
+      }
 
 }
 
@@ -120,8 +137,8 @@ static void ui_draw_navi(UIState *s)
  
   float speedLimit =  scene.liveNaviData.getSpeedLimit();  
   float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
-  float map_sign =  scene.liveNaviData.getSafetySign();
-  int  mapValid =  scene.liveNaviData.getMapValid();
+  float map_sign = 300 // scene.liveNaviData.getSafetySign();
+  int  mapValid = 1;// scene.liveNaviData.getMapValid();
 
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
