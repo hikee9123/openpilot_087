@@ -47,8 +47,8 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     else if( speedLimit <= 100 )  traffic_sign = name_sped[8];
     else if( speedLimit <= 110 )  traffic_sign = name_sped[9];
   
-    if( traffic_sign ) 
-    {
+    if( traffic_sign == NULL )  return;
+
       int img_size = 200;   // 472
       int img_xpos = s->viz_rect.x + bdr_s*2 + 184 + 20;
       int img_ypos = s->viz_rect.y + bdr_s;
@@ -61,19 +61,19 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       else
         sprintf(szSLD,"%.0fm", speedLimitAheadDistance );
 
-      int txt_xpos = img_xpos + img_size * 0.5;
+      int txt_xpos = img_xpos;
       int txt_ypos = img_ypos + img_size;
-      const Rect rect = { txt_xpos, txt_ypos, 184, 50};
+      const Rect rect = { txt_xpos, txt_ypos, img_size*0.8, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
-      ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 10, 20.);        
+      ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-      ui_text(s, rect.centerX(), 50+40, szSLD, 48 * 2.5, COLOR_WHITE, "sans-bold");
+      ui_text(s, rect.centerX(), rect.centerY(), szSLD, 25, COLOR_WHITE, "sans-bold");
 
 
       // 2. image
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
-    }
+
 }
 
 static void ui_draw_navi(UIState *s) 
