@@ -171,15 +171,17 @@ int main() {
          opkr = 5;
       }
 
-      if ( opkr == 1 || dSpeed < 10  )
+      if ( opkr == 1000 )
+      {
+        if( dSpeed < 10 && nDelta_nsec > 500 ) opkr = 0;
+        else if( nDelta_nsec > 100 ) opkr = 0;
+      }
+      else if ( opkr == 1 || dSpeed < 10  )
       {
         res.tv_sec = entry.tv_sec;
         res.tv_nsec = tv_nsec;
       }
-      else if ( opkr == 1000 )
-      {
-        if( nDelta_nsec > 500 ) opkr = 0;
-      }
+
       else if ( opkr )
       {
          if( nDelta > opkr ) opkr = 0;

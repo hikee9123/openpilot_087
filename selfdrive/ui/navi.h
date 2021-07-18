@@ -110,11 +110,16 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 
 
-    if( nTrafficSign == 195 ) szSign = "가변구간";
+    if( nTrafficSign == 131 ) szSign = "신호위반";
     else if( nTrafficSign == 165 ) szSign = "구간단속";
-    else if( nTrafficSign == 131 ) szSign = "신호위반";
-    else if( nTrafficSign == 248 ) szSign = "교통정보";
+    else if( nTrafficSign == 195 ) szSign = "가변구간";
     else if( nTrafficSign == 200 ) szSign = "이동식";
+    else if( nTrafficSign == 231 ) szSign = "카메라";
+    else if( nTrafficSign == 248 ) szSign = "교통정보";
+    else if( nTrafficSign == 113 ) szSign = "굽은도로";
+    
+    
+
     if( szSign )
     {
       ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 26, COLOR_WHITE, "sans-bold"); 
@@ -125,10 +130,11 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
       if( nTrafficSign == 111 ) szSign = "우측커브";
       else if( nTrafficSign == 112 ) szSign = "좌측커브";
-      else if( nTrafficSign == 124 ) szSign = "과속방지턱";
-      else if( nTrafficSign == 129 ) szSign = "주정차금지";
-      else if( nTrafficSign == 118 ) szSign = "어린이보호";
-      else if( nTrafficSign == 127 ) szSign = "어린이보호";
+      else if( nTrafficSign == 124 ) szSign = "방지턱";
+      else if( nTrafficSign == 129 ) szSign = "주정차";
+      else if( nTrafficSign == 118 ) szSign = "어린이";
+      else if( nTrafficSign == 127 ) szSign = "어린이";
+      else if( nTrafficSign == 122 ) szSign = "좁아지는";
       else  szSign = szSignal;
       sprintf(szSignal,"%d", nTrafficSign );
       ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.65), szSign, 73, COLOR_WHITE, "sans-bold"); 
