@@ -60,7 +60,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 static void ui_draw_navi(UIState *s) 
 {
-  UIScene &scene = s->scene;
+ // UIScene &scene = s->scene;
 
 
  // float  roadCurvature = scene.liveNaviData.getRoadCurvature();
