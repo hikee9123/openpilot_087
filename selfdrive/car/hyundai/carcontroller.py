@@ -1,4 +1,4 @@
-from cereal import car
+from cereal import car, log
 from common.realtime import DT_CTRL
 from selfdrive.car import apply_std_steer_torque_limits
 from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfahda_mfc, create_mdps12
@@ -8,7 +8,7 @@ from opendbc.can.packer import CANPacker
 from selfdrive.car.hyundai.navicontrol  import NaviControl
 
 VisualAlert = car.CarControl.HUDControl.VisualAlert
-
+LaneChangeState = log.LateralPlan.LaneChangeState
 
 def process_hud_alert(enabled, fingerprint, visual_alert, left_lane,
                       right_lane, left_lane_depart, right_lane_depart):
@@ -47,8 +47,34 @@ class CarController():
     self.last_lead_distance = 0
     self.lkas11_cnt = 0
 
-    self.NaviCtrl = NaviControl(self.p)    
+    self.navi_ctrl = NaviControl(self.p)
+    self.steerWarning_time = 0
+    self.steer_torque_wait_timer = 0
+    self.blinker_safety_timer = 0
 
+  def lkas_active_control( self, enabled, CS ):
+    if CS.out.steerWarning:
+      self.steerWarning_time = 200
+    elif self.steerWarning_time > 0:
+      self.steerWarning_time -= 1
+
+    path_plan = self.navi_ctrl.update_lateralPlan()
+    if path_plan.laneChangeState != LaneChangeState.off:
+      self.steer_torque_wait_timer = 0
+      self.blinker_safety_timer = 0
+    elif CS.out.leftBlinker or CS.out.rightBlinker:
+      self.blinker_safety_timer += 1
+      if self.blinker_safety_timer > 10:
+        self.steer_torque_wait_timer = 50
+  
+    if self.steer_torque_wait_timer > 0:
+      self.steer_torque_wait_timer -= 1   
+    
+    
+    lkas_active = enabled and not self.steerWarning_time and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
+    lkas_active = lkas_active and self.steer_torque_wait_timer == 0
+
+    return lkas_active
 
   def update(self, c, CS, frame ):
     enabled = c.enabled
@@ -66,7 +92,8 @@ class CarController():
     self.steer_rate_limited = new_steer != apply_steer
 
     # disable when temp fault is active, or below LKA minimum speed
-    lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
+    #lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
+    lkas_active = self.lkas_active_control( enabled, CS )
 
     if not lkas_active:
       apply_steer = 0
@@ -112,7 +139,7 @@ class CarController():
       self.last_lead_distance = 0
 
     elif CS.out.cruiseState.accActive:
-      btn_signal = self.NaviCtrl.update_main( CS )
+      btn_signal = self.navi_ctrl.update( CS )
       if btn_signal != None:
         can_sends.append(create_clu11(self.packer, self.resume_cnt, CS.clu11, btn_signal ))
         self.resume_cnt += 1

@@ -55,8 +55,8 @@ class CarState(CarStateBase):
     else:
       self.cruise_buttons_time = 0
        
-    str_log1 = 'torg:{:5.0f} steer={:5.0f}  cruise={:.0f} VSetDis={:.0f}'.format( self.cruise_buttons, self.cruise_buttons_time , self.cruise_set_speed_kph, self.VSetDis )
-    trace1.printf3( '  {}'.format( str_log1 ) )
+    #str_log1 = 'torg:{:5.0f} steer={:5.0f}  cruise={:.0f} VSetDis={:.0f}'.format( self.cruise_buttons, self.cruise_buttons_time , self.cruise_set_speed_kph, self.VSetDis )
+    #trace1.printf3( '  {}'.format( str_log1 ) )
      
     if self.cruise_buttons_time >= 100:
       self.cruise_set_speed_kph = self.VSetDis

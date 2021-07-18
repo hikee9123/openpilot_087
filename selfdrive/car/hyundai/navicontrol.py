@@ -19,15 +19,20 @@ class NaviControl():
   def __init__(self, p = None ):
     self.p = p
     
-    self.sm = messaging.SubMaster(['liveNaviData']) 
+    self.sm = messaging.SubMaster(['liveNaviData','lateralPlan']) 
 
     self.btn_cnt = 0
     self.seq_command = 0
     self.target_speed = 0
     self.set_point = 0
     self.wait_timer2 = 0
-    self.cruise_set_speed_kph = 30
 
+
+
+  def update_lateralPlan( self ):
+    self.sm.update(0)
+    path_plan = self.sm['lateralPlan']
+    return path_plan
 
 
 
@@ -111,9 +116,9 @@ class NaviControl():
     return btn_signal
 
 
-  def get_navi_speed(self, sm, CS ):
+  def get_navi_speed(self, sm, CS, cruiseState_speed ):
+    cruise_set_speed_kph = cruiseState_speed
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH    
-    cruise_set_speed_kph = self.cruise_set_speed_kph
     self.liveNaviData = sm['liveNaviData']    
     speedLimit = self.liveNaviData.speedLimit
     speedLimitDistance = self.liveNaviData.speedLimitDistance
@@ -124,36 +129,33 @@ class NaviControl():
     if not mapValid or trafficType == 0:
       return  cruise_set_speed_kph
 
-    elif CS.is_highway:
+    elif CS.is_highway or speedLimit < 30:
       return  cruise_set_speed_kph
     else:
       if speedLimit <= 50:
-        spdTarget = interp( speedLimitDistance, [50,600], [ speedLimit, speedLimit + 50 ] )
-      elif  speedLimit <= 100:
-        spdTarget = interp( speedLimitDistance, [50, 250, 600], [ speedLimit,  speedLimit+10, speedLimit+20 ] )      
+        spdTarget = interp( speedLimitDistance, [10, 600], [ speedLimit, speedLimit + 50 ] )
       else:
-        spdTarget = interp( speedLimitDistance, [100, 300, 600], [ speedLimit,  speedLimit+10, speedLimit+20 ] )
+        spdTarget = interp( speedLimitDistance, [50, 600], [ speedLimit, speedLimit + 80 ] )
     
     if v_ego_kph < speedLimit:
       v_ego_kph = speedLimit
 
     cruise_set_speed_kph = min( spdTarget, v_ego_kph )
-
     return  cruise_set_speed_kph
 
-  def update_main(self,  CS ):  
+  def update(self,  CS ):  
     # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
     # atom
-    self.sm.update(0) 
+    self.sm.update(0)
 
     btn_signal = None
-    self.cruise_set_speed_kph = CS.out.cruiseState.speed * CV.MS_TO_KPH
-    if self.button_status( CS  ) == 0:
+    if not self.button_status( CS  ):
       pass
     elif CS.acc_active:
-      kph_set_vEgo = self.get_navi_speed(  self.sm , CS )
-      self.ctrl_speed = min( self.cruise_set_speed_kph, kph_set_vEgo)
-      btn_signal = self.ascc_button_control( CS, self.ctrl_speed )      
+      cruiseState_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH      
+      kph_set_vEgo = self.get_navi_speed(  self.sm , CS, cruiseState_speed )
+      self.ctrl_speed = min( cruiseState_speed, kph_set_vEgo)
+      btn_signal = self.ascc_button_control( CS, self.ctrl_speed )
  
 
     return btn_signal
