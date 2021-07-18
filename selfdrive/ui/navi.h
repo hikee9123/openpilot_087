@@ -62,11 +62,10 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     int img_ypos = s->viz_rect.y + bdr_s - 20;
 
     nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-      // 1. text  Distance
+    // 1. text  Distance
     if( speedLimitAheadDistance >= 5 )
     {
- 
-      char  szSLD[50];
+       char  szSLD[50];
       if( speedLimitAheadDistance >= 1000 )
         sprintf(szSLD,"%.1fkm", speedLimitAheadDistance * 0.001 );
       else
@@ -111,29 +110,29 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 
 
-      if( nTrafficSign == 195 ) szSign = "가변구간";
-      else if( nTrafficSign == 165 ) szSign = "구간단속";
-      else if( nTrafficSign == 131 ) szSign = "신호위반";
-      else if( nTrafficSign == 248 ) szSign = "교통정보";
-      else if( nTrafficSign == 200 ) szSign = "이동식";
-      if( szSign )
-      {
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 26, COLOR_WHITE, "sans-bold"); 
-      }
-      else
-      {
-        char  szSignal[50];
+    if( nTrafficSign == 195 ) szSign = "가변구간";
+    else if( nTrafficSign == 165 ) szSign = "구간단속";
+    else if( nTrafficSign == 131 ) szSign = "신호위반";
+    else if( nTrafficSign == 248 ) szSign = "교통정보";
+    else if( nTrafficSign == 200 ) szSign = "이동식";
+    if( szSign )
+    {
+      ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 26, COLOR_WHITE, "sans-bold"); 
+    }
+    else
+    {
+      char  szSignal[50];
 
-        if( nTrafficSign == 111 ) szSign = "우측커브";
-        else if( nTrafficSign == 112 ) szSign = "좌측커브";
-        else if( nTrafficSign == 124 ) szSign = "과속방지턱";
-        else if( nTrafficSign == 129 ) szSign = "주정차금지";
-        else if( nTrafficSign == 118 ) szSign = "어린이보호";
-        else if( nTrafficSign == 127 ) szSign = "어린이보호";
-        else  szSign = szSignal;
-        sprintf(szSignal,"%d", nTrafficSign );
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.65), szSign, 73, COLOR_WHITE, "sans-bold"); 
-      }
+      if( nTrafficSign == 111 ) szSign = "우측커브";
+      else if( nTrafficSign == 112 ) szSign = "좌측커브";
+      else if( nTrafficSign == 124 ) szSign = "과속방지턱";
+      else if( nTrafficSign == 129 ) szSign = "주정차금지";
+      else if( nTrafficSign == 118 ) szSign = "어린이보호";
+      else if( nTrafficSign == 127 ) szSign = "어린이보호";
+      else  szSign = szSignal;
+      sprintf(szSignal,"%d", nTrafficSign );
+      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.65), szSign, 73, COLOR_WHITE, "sans-bold"); 
+    }
 
 }
 
@@ -149,8 +148,8 @@ static void ui_draw_navi(UIState *s)
  
   float speedLimit =  scene.liveNaviData.getSpeedLimit();  
   float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
-  float map_sign = 300; // scene.liveNaviData.getSafetySign();
-  int  mapValid = 1;// scene.liveNaviData.getMapValid();
+  float map_sign = scene.liveNaviData.getSafetySign();
+  int  mapValid = scene.liveNaviData.getMapValid();
 
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
