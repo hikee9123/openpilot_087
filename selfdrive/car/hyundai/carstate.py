@@ -30,6 +30,7 @@ class CarState(CarStateBase):
     self.time_delay_int = 0
     self.enable_status = 0
     self.VSetDis = 0
+    self.clu_Vanz = 0
 
     # acc button 
     self.prev_clu_CruiseSwState = 0
@@ -42,12 +43,12 @@ class CarState(CarStateBase):
   def cruise_speed_button( self ):
     if self.prev_acc_active != self.acc_active:
       self.prev_acc_active = self.acc_active
-      self.cruise_set_speed_kph = self.VSetDis
+      self.cruise_set_speed_kph = self.clu_Vanz
 
     set_speed_kph = self.cruise_set_speed_kph
     if not self.acc_active:
-      self.cruise_set_speed_kph = self.VSetDis
-      return self.VSetDis
+      self.cruise_set_speed_kph = self.clu_Vanz
+      return self.clu_Vanz
 
     if self.cruise_buttons:
       self.cruise_buttons_time += 1
@@ -121,8 +122,9 @@ class CarState(CarStateBase):
 
     # cruise state
     self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]  #kph
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
-    ret.vEgo = self.VSetDis * CV.KPH_TO_MS
+    ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
     ret.cruiseState.accActive = self.acc_active
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
     ret.cruiseState.cruiseSwState = self.cruise_buttons
