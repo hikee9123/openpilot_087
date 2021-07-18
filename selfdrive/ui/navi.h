@@ -114,17 +114,17 @@ static void ui_draw_navi(UIState *s)
 
 
  // float  roadCurvature = scene.liveNaviData.getRoadCurvature();
-  int   opkrturninfo = scene.liveNaviData.getTurnInfo();
+ // int   opkrturninfo = scene.liveNaviData.getTurnInfo();
  //int   opkrdisttoturn = scene.liveNaviData.getDistanceToTurn();
 
  
-  float speedLimit = 90; // scene.liveNaviData.getSpeedLimit();  
-  float speedLimitAheadDistance = 100;// scene.liveNaviData.getSpeedLimitDistance();  
-  float map_sign = 200; // scene.liveNaviData.getSafetySign();
-  int  mapValid = 1;// scene.liveNaviData.getMapValid();
+  float speedLimit =  scene.liveNaviData.getSpeedLimit();  
+  float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
+  float map_sign =  scene.liveNaviData.getSafetySign();
+  int  mapValid =  scene.liveNaviData.getMapValid();
 
 
-    printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
+  //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
 
 
   if( mapValid )
