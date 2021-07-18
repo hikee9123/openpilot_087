@@ -89,7 +89,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
       int txt_size = int(img_size*0.8);
       int txt_xpos = img_xpos + 20;  
-      int txt_ypos = img_ypos + img_size;
+      int txt_ypos = img_ypos + img_size - 20;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
