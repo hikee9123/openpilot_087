@@ -48,24 +48,26 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       float img_alpha = 0.3f;
 
       // 1. text
+      char  szSLD[50];
+      if( speedLimitAheadDistance >= 1000 )
+        sptinrf(szSLD,"%.1fkm", speedLimitAheadDistance * 0.001 );
+        //ui_print( s, txt_xpos, txt_ypos,  "%.1fkm", speedLimitAheadDistance * 0.001 );
+      else
+        sptinrf(szSLD,"%.0fm", speedLimitAheadDistance );
+        //ui_print( s, txt_xpos, txt_ypos,  "%.0fm", speedLimitAheadDistance );
 
-      int txt_xpos = img_xpos + img_size;
+      int txt_xpos = img_xpos + img_size * 0.5;
       int txt_ypos = img_ypos + img_size;
-
-      nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, 25);
+      const Rect rect = { txt_xpos, txt_ypos, 184, 50};
+      ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
+      ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 10, 20.);        
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-      if( speedLimitAheadDistance >= 1000 )
-        ui_print( s, txt_xpos, txt_ypos,  "%.1fkm", speedLimitAheadDistance * 0.001 );
-      else
-        ui_print( s, txt_xpos, txt_ypos,  "%.0fm", speedLimitAheadDistance );
+      ui_draw_text(s, rect.centerX(), 50+40, szSLD, 48 * 2.5, COLOR_WHITE, "sans-bold");
 
+    
       // 2. image
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
-
-
-
     }
 }
 
