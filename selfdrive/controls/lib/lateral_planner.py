@@ -74,7 +74,7 @@ class LateralPlanner():
     # auto
     self.lane_change_timer_auto += DT_MDL
     ll_probs = md.laneLineProbs   # 0,1,2,3
-    if torque_applied or self.lane_change_timer_atuo < LANE_CHANGE_AUTO_TIME:
+    if torque_applied or self.lane_change_timer_auto < LANE_CHANGE_AUTO_TIME:
         pass    
     elif self.lane_change_direction == LaneChangeDirection.left:
       if ll_probs[0] > 0.5:

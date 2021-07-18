@@ -52,20 +52,20 @@ class CarController():
     self.steer_torque_wait_timer = 0
     self.blinker_safety_timer = 0
 
-  def lkas_active_control( self, enabled, CS ):
+  def lkas_active_control( self, enabled, CS, path_plan ):
     if CS.out.steerWarning:
       self.steerWarning_time = 200
     elif self.steerWarning_time > 0:
       self.steerWarning_time -= 1
 
-    path_plan = self.navi_ctrl.update_lateralPlan()
+
     if path_plan.laneChangeState != LaneChangeState.off:
       self.steer_torque_wait_timer = 0
       self.blinker_safety_timer = 0
     elif CS.out.leftBlinker or CS.out.rightBlinker:
       self.blinker_safety_timer += 1
       if self.blinker_safety_timer > 10:
-        self.steer_torque_wait_timer = 50
+        self.steer_torque_wait_timer = 200
   
     if self.steer_torque_wait_timer > 0:
       self.steer_torque_wait_timer -= 1   
@@ -93,7 +93,8 @@ class CarController():
 
     # disable when temp fault is active, or below LKA minimum speed
     #lkas_active = enabled and not CS.out.steerWarning and CS.out.vEgo >= CS.CP.minSteerSpeed and CS.out.cruiseState.enabled
-    lkas_active = self.lkas_active_control( enabled, CS )
+    path_plan = self.navi_ctrl.update_lateralPlan()    
+    lkas_active = self.lkas_active_control( enabled, CS, path_plan )
 
     if not lkas_active:
       apply_steer = 0

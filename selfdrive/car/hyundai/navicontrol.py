@@ -146,7 +146,7 @@ class NaviControl():
   def update(self,  CS ):  
     # send scc to car if longcontrol enabled and SCC not on bus 0 or ont live
     # atom
-    self.sm.update(0)
+    #self.sm.update(0)
 
     btn_signal = None
     if not self.button_status( CS  ):
