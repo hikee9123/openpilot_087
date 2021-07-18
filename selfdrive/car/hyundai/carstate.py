@@ -34,7 +34,7 @@ class CarState(CarStateBase):
     self.acc_active = 0
     self.cruise_set_speed_kph = 0
 
-  @staticmethod
+  #@staticmethod
   def cruise_speed_button( self ):
     set_speed_kph = self.cruise_set_speed_kph
 
