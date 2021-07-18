@@ -74,14 +74,16 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     else if( nTrafficSign == 200 ) szSign = "이동식";
     else sprintf(szSignal,"[%d]", nTrafficSign );
 
-    if( traffic_sign == NULL )  return;
 
-      int img_size = 200;   // 472
-      int img_xpos = s->viz_rect.x + bdr_s*2 + 184 + 10;
-      int img_ypos = s->viz_rect.y + bdr_s - 20;
-      float img_alpha = 0.3f;
+    int img_size = 200;   // 472
+    int img_xpos = s->viz_rect.x + bdr_s + 184 + 20;
+    int img_ypos = s->viz_rect.y + bdr_s - 20;
 
+    nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+    if( traffic_sign  )  
+    {
       // 1. text
+      float img_alpha = 0.3f;      
       char  szSLD[50];
       if( speedLimitAheadDistance >= 1000 )
         sprintf(szSLD,"%.1fkm", speedLimitAheadDistance * 0.001 );
@@ -94,14 +96,12 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
-      nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
+
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       ui_text(s, rect.centerX(), rect.centerY()+15, szSLD, 40, COLOR_WHITE, "sans-bold");
-
-
-
       // 2. image
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
+    }
 
       if( szSign )
         ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 25, COLOR_WHITE, "sans-bold");      
