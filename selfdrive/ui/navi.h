@@ -30,27 +30,31 @@ static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
 static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  float speedLimitAheadDistance ) 
 {
     const char *traffic_sign = NULL;
-    const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn", "img_space"};
+    const char *name_sped[] = {"speed_var","traf_turn", "img_space","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110"};
 
 
     const char  *szSign = NULL;
 
     int  nTrafficSign = int( map_sign );
 
-    if( nTrafficSign == 113 ) traffic_sign = name_sped[10];  // 굽은도로
+    if( nTrafficSign == 113 ) traffic_sign = name_sped[1];  // 굽은도로
     else if( nTrafficSign == 195 ) traffic_sign = name_sped[0];  // 가변 단속. ( by opkr)
     else if( speedLimit <= 10 )  traffic_sign = NULL;
-    else if( speedLimit <= 30 )  traffic_sign = name_sped[1];
-    else if( speedLimit <= 40 )  traffic_sign = name_sped[2];
-    else if( speedLimit <= 50 )  traffic_sign = name_sped[3];
-    else if( speedLimit <= 60 )  traffic_sign = name_sped[4];
-    else if( speedLimit <= 70 )  traffic_sign = name_sped[5];
-    else if( speedLimit <= 80 )  traffic_sign = name_sped[6];
-    else if( speedLimit <= 90 )  traffic_sign = name_sped[7];
-    else if( speedLimit <= 100 )  traffic_sign = name_sped[8];
-    else if( speedLimit <= 110 )  traffic_sign = name_sped[9];
-    else traffic_sign = name_sped[11];
+    else if( speedLimit <= 30 )  traffic_sign = name_sped[3];
+    else if( speedLimit <= 40 )  traffic_sign = name_sped[4];
+    else if( speedLimit <= 50 )  traffic_sign = name_sped[5];
+    else if( speedLimit <= 60 )  traffic_sign = name_sped[6];
+    else if( speedLimit <= 70 )  traffic_sign = name_sped[7];
+    else if( speedLimit <= 80 )  traffic_sign = name_sped[8];
+    else if( speedLimit <= 90 )  traffic_sign = name_sped[9];
+    else if( speedLimit <= 100 )  traffic_sign = name_sped[10];
+    else if( speedLimit <= 110 )  traffic_sign = name_sped[11];
+
   
+    if( nTrafficSign && traffic_sign == NULL )
+    {
+      traffic_sign = name_sped[2];
+    }
 
 
     int img_size = 200;   // 472
@@ -143,8 +147,6 @@ static void ui_draw_navi(UIState *s)
 
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
-
-
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 }
