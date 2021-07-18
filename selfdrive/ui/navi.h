@@ -61,7 +61,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       // 1. text  Distance
     if( speedLimitAheadDistance >= 5 )
     {
-      float img_alpha = 0.3f;      
+ 
       char  szSLD[50];
       if( speedLimitAheadDistance >= 1000 )
         sprintf(szSLD,"%.1fkm", speedLimitAheadDistance * 0.001 );
@@ -82,6 +82,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     // 2. image
     if( traffic_sign  )  
     {
+      float img_alpha = 0.3f;       
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
     }
 
