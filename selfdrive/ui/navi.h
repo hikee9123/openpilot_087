@@ -32,7 +32,9 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     const char *traffic_sign = NULL;
     const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn"};
 
-    const char  *szSign = NULL;
+    const char  szSignal[50];
+    const char  *szSign = szSignal;
+
     int  nTrafficSign = int( map_sign );
 
     if( nTrafficSign == 113 ) traffic_sign = name_sped[10];  // 굽은도로
@@ -64,11 +66,12 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
    231 : 단속(카메라, 신호위반)
    248 : 교통정보수집
 */
+    
     if( nTrafficSign == 195 ) szSign = "가변";
     else if( nTrafficSign == 165 ) szSign = "구간단속";
     else if( nTrafficSign == 131 ) szSign = "카메라";
     else if( nTrafficSign == 248 ) szSign = "교통정보";
-    else szSign = "단속";
+    else sprintf(szSignal,"%d", nTrafficSign );
 
     if( traffic_sign == NULL )  return;
 
@@ -85,14 +88,14 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         sprintf(szSLD,"%.0fm", speedLimitAheadDistance );
 
       int txt_size = int(img_size*0.8);
-      int txt_xpos = img_xpos;  
+      int txt_xpos = img_xpos + 20;  
       int txt_ypos = img_ypos + img_size;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
       ui_draw_rect(s->vg, rect, COLOR_WHITE_ALPHA(100), 5, 20.);        
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-      ui_text(s, rect.centerX(), rect.centerY()+10, szSLD, 40, COLOR_WHITE, "sans-bold");
+      ui_text(s, rect.centerX(), rect.centerY()+15, szSLD, 40, COLOR_WHITE, "sans-bold");
 
 
 
