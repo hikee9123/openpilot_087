@@ -20,6 +20,7 @@
 // 일부 코드 OPKR 참고.
 
 
+
 CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
 {
   QWidget *w = new QWidget(parent);  
@@ -33,11 +34,6 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
     const char* gitcommit = "/data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh";
     const char* gitpull = "/data/openpilot/selfdrive/assets/addon/sh/gitpull.sh";
 
-        //   std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/apk/apk.py");
-        //    std::system("chmod 777 /data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh");
-
-   // std::system("chmod 777 /data/openpilot/gitcommit.sh");
-   // std::system("chmod 777 /data/openpilot/gitpull.sh");
     
 
     std::system( gitcommit );
