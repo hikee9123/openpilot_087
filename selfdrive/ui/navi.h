@@ -5,6 +5,7 @@
 
 /*
 this is navigation code by OPKR, and thank you to the OPKR developer.
+I love OPKR code.
 */
 
 static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
@@ -42,17 +43,17 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     if( traffic_sign ) 
     {
       int img_size = 200;   // 472
-      int img_xpos = s->viz_rect.x + bdr_s + 184;
+      int img_xpos = s->viz_rect.x + bdr_s*2 + 184 + 20;
       int img_ypos = s->viz_rect.y + bdr_s;
       float img_alpha = 0.3f;
 
       // 1. text
 
-      int txt_xpos = img_xpos;
+      int txt_xpos = img_xpos + img_size;
       int txt_ypos = img_ypos + img_size;
 
       nvgFontFace(s->vg, "sans-regular");
-      nvgFontSize(s->vg, 20);
+      nvgFontSize(s->vg, 25);
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       if( speedLimitAheadDistance >= 1000 )
