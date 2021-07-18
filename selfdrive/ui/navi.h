@@ -84,7 +84,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         sprintf(szSLD,"%.0fm", speedLimitAheadDistance );
 
       int txt_size = int(img_size*0.6);
-      int txt_xpos = img_xpos + img_size*0.5 - txt_size;  
+      int txt_xpos = img_xpos + img_size*0.5;  
       int txt_ypos = img_ypos + img_size;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
@@ -93,6 +93,8 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       ui_text(s, rect.centerX(), rect.centerY()+5, szSLD, 40, COLOR_WHITE, "sans-bold");
 
+      if( szSign )
+        ui_text(s, txt_xpos, img_ypos, szSign, 20, COLOR_WHITE, "sans-bold");
 
       // 2. image
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
