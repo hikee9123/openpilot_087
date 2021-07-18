@@ -68,6 +68,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     else if( nTrafficSign == 165 ) szSign = "구간";
     else if( nTrafficSign == 131 ) szSign = "카메라";
     else if( nTrafficSign == 248 ) szSign = "교통정보";
+    else szSign = "단속";
 
     if( traffic_sign == NULL )  return;
 
