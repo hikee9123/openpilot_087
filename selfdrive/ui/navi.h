@@ -37,24 +37,28 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
   
     if( traffic_sign ) 
     {
-      int img_speedlimit_size = 100;   // 472
-      int img_speedlimit_x = s->viz_rect.x + bdr_s*2 - img_speedlimit_size/2;
-      int img_speedlimit_y = s->viz_rect.y + bdr_s - img_speedlimit_size/2;
+      int img_speedlimit_size = 200;   // 472
+      int img_speedlimit_x = s->viz_rect.x + bdr_s + 184 + img_speedlimit_size/2;
+      int img_speedlimit_y = s->viz_rect.y + bdr_s + img_speedlimit_size/2;
       float img_speedlimit_alpha = 0.3f;
-      ui_draw_image(s, {img_speedlimit_x, img_speedlimit_y, img_speedlimit_size, img_speedlimit_size}, traffic_sign, img_speedlimit_alpha);
 
-
+      // 1. text
       nvgFontFace(s->vg, "sans-regular");
       nvgFontSize(s->vg, 90);
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-      img_speedlimit_y += 470;
-      img_speedlimit_x += img_speedlimit_size/2;
-      
+      int txt_speedlimit_y = img_speedlimit_y + img_speedlimit_size/2;
+      int txt_speedlimit_x = img_speedlimit_x + img_speedlimit_size/2;
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       if( speedLimitAheadDistance >= 1000 )
-        ui_print( s, img_speedlimit_x, img_speedlimit_y,  "%.1fkm", speedLimitAheadDistance * 0.001 );
+        ui_print( s, txt_speedlimit_y, txt_speedlimit_x,  "%.1fkm", speedLimitAheadDistance * 0.001 );
       else
-        ui_print( s, img_speedlimit_x, img_speedlimit_y,  "%.0fm", speedLimitAheadDistance );
+        ui_print( s, txt_speedlimit_y, txt_speedlimit_x,  "%.0fm", speedLimitAheadDistance );
+
+      // 2. image
+      ui_draw_image(s, {img_speedlimit_x, img_speedlimit_y, img_speedlimit_size, img_speedlimit_size}, traffic_sign, img_speedlimit_alpha);
+
+
+
     }
 }
 
