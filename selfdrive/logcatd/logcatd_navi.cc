@@ -178,7 +178,7 @@ int main() {
       }
       else if ( opkr )
       {
-        if( nDelta >= opkr ) opkr = 0;
+        if( nDelta > opkr ) opkr = 0;
       }
 
       if ( opkr )
