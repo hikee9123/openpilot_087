@@ -42,16 +42,18 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     if( traffic_sign ) 
     {
       int img_size = 200;   // 472
-      int img_xpos = s->viz_rect.x + bdr_s + 184 + img_size/2;
-      int img_ypos = s->viz_rect.y + bdr_s + img_size/2;
+      int img_xpos = s->viz_rect.x + bdr_s + 184;
+      int img_ypos = s->viz_rect.y + bdr_s;
       float img_alpha = 0.3f;
 
       // 1. text
+
+      int txt_xpos = img_xpos;
+      int txt_ypos = img_ypos + img_size;
+
       nvgFontFace(s->vg, "sans-regular");
       nvgFontSize(s->vg, 20);
       nvgTextAlign(s->vg, NVG_ALIGN_CENTER | NVG_ALIGN_BASELINE);
-      int txt_xpos = img_xpos;
-      int txt_ypos = img_ypos + img_size/2;
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       if( speedLimitAheadDistance >= 1000 )
         ui_print( s, txt_xpos, txt_ypos,  "%.1fkm", speedLimitAheadDistance * 0.001 );
