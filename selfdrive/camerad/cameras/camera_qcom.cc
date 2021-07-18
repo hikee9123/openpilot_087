@@ -882,13 +882,13 @@ static int lens_truepos(SubMaster *sm)
     //autoFocus = QUIState::ui_state.scene.scr.autoFocus * 2;
   }
 
-  int  lens_true_pos = 0;
+  int  lensTruePos = 0;
   if( autoFocus )
   {
-    lens_true_pos = LP3_AF_DAC_DOWN + autoFocus;
+    lensTruePos = LP3_AF_DAC_DOWN + autoFocus;
   }
 
-  return lens_true_pos;
+  return lensTruePos;
 }
 
 static void do_autofocus(CameraState *s, SubMaster *sm) {
@@ -908,7 +908,7 @@ static void do_autofocus(CameraState *s, SubMaster *sm) {
   int target = std::clamp(lens_true_pos - sag, float(LP3_AF_DAC_DOWN), float(LP3_AF_DAC_UP));
 
 
-  int autoFocus = lens_truepos();
+  int autoFocus = lens_truepos(sm);
   if( autoFocus )
     lens_true_pos = autoFocus;
 
