@@ -70,6 +70,7 @@ int main() {
 
   ExitHandler do_exit;
   PubMaster pm({"liveNaviData"});
+  SubMaster sm({"carState"});
   LiveNaviDataResult  res;
 
   log_time last_log_time = {};
@@ -87,6 +88,9 @@ int main() {
 
 
     while (!do_exit) {
+      sm.update(0);
+      const float dSpeed = sm["carState"].getCarState().getVEgo() * 3.6;
+  
       log_msg log_msg;
       int err = android_logger_list_read(logger_list, &log_msg);
       if (err <= 0) break;
@@ -178,7 +182,7 @@ int main() {
       }
       else if ( opkr )
       {
-        if( nDelta > opkr ) opkr = 0;
+        if( dSpeed > 5  && (nDelta > opkr) ) opkr = 0;
       }
 
       if ( opkr )
