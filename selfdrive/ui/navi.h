@@ -65,7 +65,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
    248 : 교통정보수집
 */
     if( nTrafficSign == 195 ) szSign = "가변";
-    else if( nTrafficSign == 165 ) szSign = "구간";
+    else if( nTrafficSign == 165 ) szSign = "구간단속";
     else if( nTrafficSign == 131 ) szSign = "카메라";
     else if( nTrafficSign == 248 ) szSign = "교통정보";
     else szSign = "단속";
@@ -85,7 +85,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         sprintf(szSLD,"%.0fm", speedLimitAheadDistance );
 
       int txt_size = int(img_size*0.8);
-      int txt_xpos = img_xpos + 50;  
+      int txt_xpos = img_xpos;  
       int txt_ypos = img_ypos + img_size;
       const Rect rect = { txt_xpos, txt_ypos, txt_size, 60};
       ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);
@@ -100,7 +100,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
 
       if( szSign )
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+20, szSign, 25, COLOR_WHITE, "sans-bold");      
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos+50, szSign, 25, COLOR_WHITE, "sans-bold");      
 
 }
 
