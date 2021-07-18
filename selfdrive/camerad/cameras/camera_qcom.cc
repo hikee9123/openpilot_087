@@ -868,7 +868,7 @@ static std::optional<float> get_accel_z(SubMaster *sm) {
 
 
 
-static int lens_truepos(void) {
+static int lens_truepos(SubMaster *sm) 
 {
   // atom
   static  int autoFocus = 0;
