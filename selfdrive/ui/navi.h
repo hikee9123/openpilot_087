@@ -37,9 +37,9 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
   
     if( traffic_sign ) 
     {
-      int img_speedlimit_size = 350;   // 472
-      int img_speedlimit_x = s->viz_rect.centerX() - img_speedlimit_size/2;
-      int img_speedlimit_y = s->viz_rect.centerY() - img_speedlimit_size/2;
+      int img_speedlimit_size = 100;   // 472
+      int img_speedlimit_x = s->viz_rect.x + bdr_s*2 - img_speedlimit_size/2;
+      int img_speedlimit_y = s->viz_rect.y + bdr_s - img_speedlimit_size/2;
       float img_speedlimit_alpha = 0.3f;
       ui_draw_image(s, {img_speedlimit_x, img_speedlimit_y, img_speedlimit_size, img_speedlimit_size}, traffic_sign, img_speedlimit_alpha);
 
@@ -60,11 +60,11 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 static void ui_draw_navi(UIState *s) 
 {
- // UIScene &scene = s->scene;
+  UIScene &scene = s->scene;
 
 
  // float  roadCurvature = scene.liveNaviData.getRoadCurvature();
- // int   opkrturninfo = scene.liveNaviData.getTurnInfo();
+  int   opkrturninfo = scene.liveNaviData.getTurnInfo();
  //int   opkrdisttoturn = scene.liveNaviData.getDistanceToTurn();
 
  
@@ -74,7 +74,7 @@ static void ui_draw_navi(UIState *s)
   int  mapValid = 1;// scene.liveNaviData.getMapValid();
 
 
-    printf("ui_draw_navi %d  %.1f\n", mapValid, speedLimit);
+    printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
 
 
   if( mapValid )
