@@ -132,7 +132,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         else if( nTrafficSign == 127 ) szSign = "어린이보호";
         else  szSign = szSignal;
         sprintf(szSignal,"%d", nTrafficSign );
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.6), szSign, 73, COLOR_WHITE, "sans-bold"); 
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.65), szSign, 73, COLOR_WHITE, "sans-bold"); 
       }
 
 }
