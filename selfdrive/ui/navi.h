@@ -111,13 +111,11 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 
 
-    if( nTrafficSign == 195 ) szSign = "가변구간";
-    else if( nTrafficSign == 165 ) szSign = "구간단속";
-    else if( nTrafficSign == 131 ) szSign = "신호위반";
-    else if( nTrafficSign == 248 ) szSign = "교통정보";
-    else if( nTrafficSign == 200 ) szSign = "이동식";
-
-
+      if( nTrafficSign == 195 ) szSign = "가변구간";
+      else if( nTrafficSign == 165 ) szSign = "구간단속";
+      else if( nTrafficSign == 131 ) szSign = "신호위반";
+      else if( nTrafficSign == 248 ) szSign = "교통정보";
+      else if( nTrafficSign == 200 ) szSign = "이동식";
       if( szSign )
       {
         ui_text(s, img_xpos + int(img_size*0.5), img_ypos+25, szSign, 26, COLOR_WHITE, "sans-bold"); 
@@ -126,7 +124,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       {
         char  szSignal[50];
         sprintf(szSignal,"%d", nTrafficSign );
-        ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.7), szSignal, 80, COLOR_WHITE, "sans-bold"); 
+        ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.7), szSignal, 75, COLOR_WHITE, "sans-bold"); 
       }
 
 }
