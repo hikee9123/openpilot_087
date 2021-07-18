@@ -127,8 +127,10 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         if( nTrafficSign == 111 ) szSign = "우측커브";
         else if( nTrafficSign == 112 ) szSign = "좌측커브";
         else if( nTrafficSign == 124 ) szSign = "과속방지턱";
-        else if( nTrafficSign == 129 ) szSign = "주정차";
-        else  szSign = szSignal
+        else if( nTrafficSign == 129 ) szSign = "주정차금지";
+        else if( nTrafficSign == 118 ) szSign = "어린이보호";
+        else if( nTrafficSign == 127 ) szSign = "어린이보호";
+        else  szSign = szSignal;
         sprintf(szSignal,"%d", nTrafficSign );
         ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.6), szSign, 73, COLOR_WHITE, "sans-bold"); 
       }
