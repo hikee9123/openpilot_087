@@ -8,6 +8,13 @@ this is navigation code by OPKR, and thank you to the OPKR developer.
 I love OPKR code.
 */
 
+static void ui_draw_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
+  nvgFontFace(s->vg, font_name);
+  nvgFontSize(s->vg, size);
+  nvgFillColor(s->vg, color);
+  nvgText(s->vg, x, y, string, NULL);
+}
+
 static void ui_print(UIState *s, int x, int y,  const char* fmt, ... )
 {
   char* msg_buf = NULL;
@@ -65,7 +72,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
       ui_draw_text(s, rect.centerX(), 50+40, szSLD, 48 * 2.5, COLOR_WHITE, "sans-bold");
 
-    
+
       // 2. image
       ui_draw_image(s, {img_xpos, img_ypos, img_size, img_size}, traffic_sign, img_alpha);
     }
