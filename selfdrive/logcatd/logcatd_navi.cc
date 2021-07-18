@@ -171,7 +171,7 @@ int main() {
          opkr = 5;
       }
 
-      if ( opkr == 1 )
+      if ( opkr == 1 || dSpeed < 10  )
       {
         res.tv_sec = entry.tv_sec;
         res.tv_nsec = tv_nsec;
@@ -182,7 +182,7 @@ int main() {
       }
       else if ( opkr )
       {
-        if( dSpeed > 5  && (nDelta > opkr) ) opkr = 0;
+         if( nDelta > opkr ) opkr = 0;
       }
 
       if ( opkr )
