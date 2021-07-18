@@ -880,12 +880,14 @@ static int lens_true_pos() {
     autoFocus = param.getInt("OpkrAutoFocus") * 2;
     autoFocus = QUIState::ui_state.scene.scr.autoFocus * 2;
   }
+
+  int  lens_true_pos = 0;
   if( autoFocus )
   {
-    lens_true_pos = LP3_AF_DAC_DOWN + PautoFocus;
+    lens_true_pos = LP3_AF_DAC_DOWN + autoFocus;
   }
 
-  return 0;
+  return lens_true_pos;
 }
 
 static void do_autofocus(CameraState *s, SubMaster *sm) {
