@@ -6,6 +6,8 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
+import common.log as trace1
+
 GearShifter = car.CarState.GearShifter
 
 
@@ -24,6 +26,7 @@ class CarState(CarStateBase):
 
     # atom
     self.cruise_buttons = 0
+    self.cruise_buttons_time = 0
     self.time_delay_int = 0
     self.enable_status = 0
     self.VSetDis = 0
@@ -34,25 +37,33 @@ class CarState(CarStateBase):
     self.acc_active = 0
     self.cruise_set_speed_kph = 0
 
+
   #@staticmethod
   def cruise_speed_button( self ):
-    set_speed_kph = self.cruise_set_speed_kph
-
     if self.prev_acc_active != self.acc_active:
       self.prev_acc_active = self.acc_active
       self.cruise_set_speed_kph = self.VSetDis
 
+    set_speed_kph = self.cruise_set_speed_kph
     if not self.acc_active:
       self.cruise_set_speed_kph = self.VSetDis
       return self.VSetDis
-       
-    elif self.prev_clu_CruiseSwState == self.cruise_buttons:
-      return set_speed_kph
 
+    if self.cruise_buttons:
+      self.cruise_buttons_time += 1
+    else:
+      self.cruise_buttons_time = 0
+       
+    str_log1 = 'torg:{:5.0f} steer={:5.0f} '.format( self.cruise_buttons, self.cruise_buttons_time  )
+    trace1.printf3( '  {}'.format( str_log1 ) )
+     
+    if self.prev_clu_CruiseSwState == self.cruise_buttons:
+      return set_speed_kph
     self.prev_clu_CruiseSwState = self.cruise_buttons
-    if self.prev_clu_CruiseSwState == Buttons.RES_ACCEL:   # up 
+
+    if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
       set_speed_kph +=  1
-    elif self.prev_clu_CruiseSwState == Buttons.SET_DECEL:  # dn
+    elif self.cruise_buttons == Buttons.SET_DECEL:  # dn
       set_speed_kph -=  1
 
     if set_speed_kph < 30:
@@ -111,6 +122,7 @@ class CarState(CarStateBase):
     # cruise state
     self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
+    ret.vEgo = self.VSetDis * CV.KPH_TO_MS
     ret.cruiseState.accActive = self.acc_active
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
     ret.cruiseState.cruiseSwState = self.cruise_buttons
@@ -123,15 +135,12 @@ class CarState(CarStateBase):
       ret.cruiseState.enabled = ret.cruiseState.available # cp.vl["SCC12"]["ACCMode"] != 0
       ret.cruiseState.standstill = cp.vl["SCC11"]["SCCInfoDisplay"] == 4.
 
+    set_speed = self.cruise_speed_button()
     if self.acc_active:
       speed_conv = CV.MPH_TO_MS if cp.vl["CLU11"]["CF_Clu_SPEED_UNIT"] else CV.KPH_TO_MS
-
-      set_speed = self.cruise_speed_button()
       ret.cruiseState.speed = set_speed * speed_conv
     else:
       ret.cruiseState.speed = 0
-      self.prev_acc_active = 0
-      self.cruise_set_speed_kph = self.VSetDis
 
     # TODO: Find brake pressure
     ret.brake = 0
