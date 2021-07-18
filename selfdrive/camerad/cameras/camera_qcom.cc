@@ -866,6 +866,28 @@ static std::optional<float> get_accel_z(SubMaster *sm) {
   return std::nullopt;
 }
 
+
+static int lens_true_pos() {
+{
+  // atom
+  static  int autoFocus = 0;
+  static int nStep = 0;
+  nStep++;
+  if( nStep > 10 )
+  {
+    nStep = 0;
+    Params param = Params();
+    autoFocus = param.getInt("OpkrAutoFocus") * 2;
+    autoFocus = QUIState::ui_state.scene.scr.autoFocus * 2;
+  }
+  if( autoFocus )
+  {
+    lens_true_pos = LP3_AF_DAC_DOWN + PautoFocus;
+  }
+
+  return 0;
+}
+
 static void do_autofocus(CameraState *s, SubMaster *sm) {
   float lens_true_pos = s->lens_true_pos.load();
   if (!isnan(s->focus_err)) {
@@ -881,6 +903,12 @@ static void do_autofocus(CameraState *s, SubMaster *sm) {
   // stay off the walls
   lens_true_pos = std::clamp(lens_true_pos, float(LP3_AF_DAC_DOWN), float(LP3_AF_DAC_UP));
   int target = std::clamp(lens_true_pos - sag, float(LP3_AF_DAC_DOWN), float(LP3_AF_DAC_UP));
+
+
+  int autoFocus = lens_true_pos();
+  if( autoFocus )
+    lens_true_pos = autoFocus;
+
   s->lens_true_pos.store(lens_true_pos);
 
   /*char debug[4096];
