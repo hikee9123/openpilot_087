@@ -32,7 +32,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
     const char *traffic_sign = NULL;
     const char *name_sped[] = {"speed_var","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110","traf_turn"};
 
-    const char  szSignal[50];
+    char  szSignal[50];
     const char  *szSign = szSignal;
 
     int  nTrafficSign = int( map_sign );
@@ -67,11 +67,12 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
    248 : 교통정보수집
 */
     
-    if( nTrafficSign == 195 ) szSign = "가변";
+    if( nTrafficSign == 195 ) szSign = "가변구간";
     else if( nTrafficSign == 165 ) szSign = "구간단속";
-    else if( nTrafficSign == 131 ) szSign = "카메라";
+    else if( nTrafficSign == 131 ) szSign = "신호위반";
     else if( nTrafficSign == 248 ) szSign = "교통정보";
-    else sprintf(szSignal,"%d", nTrafficSign );
+    else if( nTrafficSign == 200 ) szSign = "이동식";
+    else sprintf(szSignal,"[%d]", nTrafficSign );
 
     if( traffic_sign == NULL )  return;
 
