@@ -878,7 +878,7 @@ static int lens_true_pos() {
     nStep = 0;
     Params param = Params();
     autoFocus = param.getInt("OpkrAutoFocus") * 2;
-    autoFocus = QUIState::ui_state.scene.scr.autoFocus * 2;
+    //autoFocus = QUIState::ui_state.scene.scr.autoFocus * 2;
   }
 
   int  lens_true_pos = 0;
