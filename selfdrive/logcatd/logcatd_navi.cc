@@ -89,6 +89,9 @@ int main() {
 
     while (!do_exit) {
       
+      sm.update(0);
+      const float dSpeed = sm["carState"].getCarState().getVEgo() * 3.6;
+  
       log_msg log_msg;
       int err = android_logger_list_read(logger_list, &log_msg);
       if (err <= 0) break;
@@ -97,9 +100,7 @@ int main() {
       err = android_log_processLogBuffer(&log_msg.entry_v1, &entry);
       if (err < 0) continue;
 
-      sm.update(0);
-      const float dSpeed = sm["carState"].getCarState().getVEgo() * 3.6;
-  
+      
 
       last_log_time.tv_sec = entry.tv_sec;
       last_log_time.tv_nsec = entry.tv_nsec;
