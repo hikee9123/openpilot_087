@@ -135,7 +135,7 @@ class NaviControl():
       if speedLimit <= 50:
         spdTarget = interp( speedLimitDistance, [20, 600], [ speedLimit, speedLimit + 50 ] )
       else:
-        spdTarget = interp( speedLimitDistance, [50, 700], [ speedLimit, speedLimit + 50 ] )
+        spdTarget = interp( speedLimitDistance, [100, 700], [ speedLimit, speedLimit + 30 ] )
     else:
       spdTarget = speedLimit
 
