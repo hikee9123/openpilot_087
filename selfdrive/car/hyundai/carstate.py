@@ -6,7 +6,7 @@ from opendbc.can.parser import CANParser
 from opendbc.can.can_define import CANDefine
 from selfdrive.config import Conversions as CV
 
-import common.log as trace1
+import common.loger as trace1
 
 GearShifter = car.CarState.GearShifter
 

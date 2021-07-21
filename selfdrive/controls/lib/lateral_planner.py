@@ -57,9 +57,7 @@ class LateralPlanner():
     self.lane_change_state = LaneChangeState.off
     self.lane_change_direction = LaneChangeDirection.none
     self.lane_change_timer = 0.0
-    self.lane_change_timer_atuo = 0.0
     self.lane_change_ll_prob = 1.0
-    self.keep_pulse_timer = 0.0
     self.prev_one_blinker = False
     self.desire = log.LateralPlan.Desire.none
 
@@ -68,6 +66,9 @@ class LateralPlanner():
     self.plan_yaw = np.zeros((TRAJECTORY_SIZE,))
     self.t_idxs = np.arange(TRAJECTORY_SIZE)
     self.y_pts = np.zeros(TRAJECTORY_SIZE)
+
+    self.lane_change_timer_atuo = 0.0
+    self.keep_pulse_timer = 0.0
 
 
   def auto_lanechange( self, md, torque_applied ):

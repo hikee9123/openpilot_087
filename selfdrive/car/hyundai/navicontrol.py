@@ -9,7 +9,7 @@ from selfdrive.controls.lib.lane_planner import TRAJECTORY_SIZE
 from common.numpy_fast import clip, interp
 import cereal.messaging as messaging
 
-import common.log as trace1
+import common.loger as trace1
 
 
 
