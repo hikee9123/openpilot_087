@@ -200,8 +200,6 @@ class PowerMonitoring:
         return True
 
  
-    print( 'battery_power_on_time={} batteryPercent={} started_seen={}'.format( battery_power_on_time, batteryPercent, started_seen ) )
-
     if pandaState is None:
       return False
 
