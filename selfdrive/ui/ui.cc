@@ -422,28 +422,28 @@ void Device::updateWakefulness(const UIState &s) {
 
 
 //  atom
-void Device::ScreenAwake( UIState &s) 
+void Device::ScreenAwake( UIState *s) 
 {
-  //UIState &s = QUIState::ui_state;  
-  const bool draw_alerts = s.scene.started;
-  const float speed = s.scene.car_state.getVEgo();
+  //UIScene &scene = s->scene;  
+  const bool draw_alerts = s->scene.started;
+  const float speed = s->scene.car_state.getVEgo();
 
-  if( s.scene.scr.nTime > 0 )
+  if( s->scene.scr.nTime > 0 )
   {
     awake_timeout = 30 * UI_FREQ;
-    s.scene.scr.nTime--;
+    s->scene.scr.nTime--;
   }
-  else if(s.scene.ignition && (speed < 1))
+  else if(s->scene.ignition && (speed < 1))
   {
     awake_timeout = 30 * UI_FREQ;
   }
-  else if( s.scene.scr.autoScreenOff && s.scene.scr.nTime == 0)
+  else if( s->scene.scr.autoScreenOff && s->scene.scr.nTime == 0)
   {
    // awake = false;
   }
 
-  int  cur_key = s.scene.scr.awake;
-  if (draw_alerts && s.scene.controls_state.getAlertSize() != cereal::ControlsState::AlertSize::NONE) 
+  int  cur_key = s->scene.scr.awake;
+  if (draw_alerts && s->scene.controls_state.getAlertSize() != cereal::ControlsState::AlertSize::NONE) 
   {
       cur_key += 1;
   }
