@@ -416,7 +416,7 @@ void Device::updateWakefulness(const UIState &s) {
     }
   }
 
-  ScreenAwake(s);
+  ScreenAwake();
   setAwake(awake_timeout, should_wake);
 }
 
