@@ -150,7 +150,7 @@ class CarState(CarStateBase):
     # TODO: Find brake pressure
     ret.brake = 0
     ret.brakePressed = cp.vl["TCS13"]["DriverBraking"] != 0
-    ret.brakeLightsDEPRECATED = bool(cp.vl["TCS13"]['BrakeLight'])
+    #ret.brakeLightsDEPRECATED = bool(cp.vl["TCS13"]['BrakeLight'])
 
     if self.CP.carFingerprint in (HYBRID_CAR | EV_CAR):
       if self.CP.carFingerprint in HYBRID_CAR:
