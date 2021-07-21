@@ -10,7 +10,7 @@ a.out
 .#*
 dist/
 pandacan.egg-info/
-board/obj/
+board/obj1/
 examples/output.csv
 .DS_Store
 .vscode*
