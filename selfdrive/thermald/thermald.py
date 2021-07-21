@@ -469,6 +469,8 @@ def thermald_thread():
     msg.deviceState.thermalStatus = thermal_status
     pm.send("deviceState", msg)
 
+    print( msg )
+
     if EON and not is_uno:
       set_offroad_alert_if_changed("Offroad_ChargeDisabled", (not usb_power))
 
