@@ -361,15 +361,22 @@ void Device::update(const UIState &s) {
 }
 
 void Device::setAwake(bool on, bool reset) {
+  UIScene  &scene = QUIState::ui_state.scene;
   if (on != awake) {
     awake = on;
-    Hardware::set_display_power(awake);
-    LOGD("setting display power %d", awake);
-    emit displayPowerChanged(awake);
+
+    // atom
+    if( scene.ignition || !scene.scr.autoScreenOff )
+    {    
+      Hardware::set_display_power(awake);
+      LOGD("setting display power %d", awake);
+      emit displayPowerChanged(awake);
+    }
   }
 
   if (reset) {
     awake_timeout = 30 * UI_FREQ;
+    scene.scr.nTime = scene.scr.autoScreenOff * 60 * UI_FREQ;
   }
 }
 
@@ -395,15 +402,57 @@ void Device::updateBrightness(const UIState &s) {
 void Device::updateWakefulness(const UIState &s) {
   awake_timeout = std::max(awake_timeout - 1, 0);
 
-  bool should_wake = s.scene.started || s.scene.ignition;
-  if (!should_wake) {
-    // tap detection while display is off
-    bool accel_trigger = abs(s.scene.accel_sensor - accel_prev) > 0.2;
-    bool gyro_trigger = abs(s.scene.gyro_sensor - gyro_prev) > 0.15;
-    should_wake = accel_trigger && gyro_trigger;
-    gyro_prev = s.scene.gyro_sensor;
-    accel_prev = (accel_prev * (accel_samples - 1) + s.scene.accel_sensor) / accel_samples;
+  bool should_wake = false;
+  if( !s.scene.scr.autoScreenOff || !s.scene.ignition )
+  {
+    should_wake = s.scene.started || s.scene.ignition;
+    if (!should_wake) {
+      // tap detection while display is off
+      bool accel_trigger = abs(s.scene.accel_sensor - accel_prev) > 0.2;
+      bool gyro_trigger = abs(s.scene.gyro_sensor - gyro_prev) > 0.15;
+      should_wake = accel_trigger && gyro_trigger;
+      gyro_prev = s.scene.gyro_sensor;
+      accel_prev = (accel_prev * (accel_samples - 1) + s.scene.accel_sensor) / accel_samples;
+    }
   }
 
+  ScreenAwake(s);
   setAwake(awake_timeout, should_wake);
+}
+
+
+//  atom
+void Device::ScreenAwake(const UIState &s) 
+{
+  //UIState &s = QUIState::ui_state;  
+  const bool draw_alerts = s.scene.started;
+  const float speed = s.scene.car_state.getVEgo();
+
+  if( s.scene.scr.nTime > 0 )
+  {
+    awake_timeout = 30 * UI_FREQ;
+    s.scene.scr.nTime--;
+  }
+  else if(s.scene.ignition && (speed < 1))
+  {
+    awake_timeout = 30 * UI_FREQ;
+  }
+  else if( s.scene.scr.autoScreenOff && s.scene.scr.nTime == 0)
+  {
+   // awake = false;
+  }
+
+  int  cur_key = s.scene.scr.awake;
+  if (draw_alerts && s.scene.controls_state.getAlertSize() != cereal::ControlsState::AlertSize::NONE) 
+  {
+      cur_key += 1;
+  }
+
+  static int old_key;
+  if( cur_key != old_key )
+  {
+    old_key = cur_key;
+    if(cur_key)
+        setAwake(true, true);
+  } 
 }

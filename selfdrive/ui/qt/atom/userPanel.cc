@@ -186,8 +186,6 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
         //  {
               //std::system("/data/openpilot/run_mixplorer.sh");
               std::system("am start -n com.mixplorer/com.mixplorer.activities.BrowseActivity");
-              
-            
          // }
   });
 
@@ -211,13 +209,15 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
        // }
   });  
 
-  auto tmapclose_exe = new ButtonControl("NAVI Close", "Close",
-                                   "NAVI 을 Close 합니다.");
+  auto tmapclose_exe = new ButtonControl("NAVI Return", "Close",
+                                   "NAVI을 Return 합니다.");
   connect(tmapclose_exe, &ButtonControl::released, [=]() 
   { 
           //if (ConfirmationDialog::confirm("Are you sure you want to exec(NAVI Close)?", this)) 
           //{
-            Params().put("OpkrMapEnable", "0");
+            Params().put("OpkrMapEnable", "3");
+
+            //Params().put("OpkrMapEnable", "0");  // NAVI program exit.
           //}
   });
 
