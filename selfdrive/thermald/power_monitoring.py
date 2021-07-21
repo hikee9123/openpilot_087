@@ -187,16 +187,20 @@ class PowerMonitoring:
     panda_charging = (pandaState.pandaState.usbPowerMode != log.PandaState.UsbPowerMode.client)
     BATT_PERC_OFF = 90 # 10 if LEON else 3
 
+    battery = HARDWARE.get_battery_capacity()
+    power_on_time = now - offroad_timestamp
     should_shutdown = False
     # Wait until we have shut down charging before powering down
-    if (now - offroad_timestamp) < 10:
+    if (power_on_time) < 10:
       pass
-    elif HARDWARE.get_battery_capacity() < 5:
+    elif battery < 5:
       should_shutdown = True
     else:
       should_shutdown |= (not panda_charging and self.should_disable_charging(pandaState, offroad_timestamp))
-      should_shutdown |= (HARDWARE.get_battery_capacity() < BATT_PERC_OFF)
+      should_shutdown |= (battery < BATT_PERC_OFF)
       should_shutdown &= started_seen or (now > MIN_ON_TIME_S)
+
+    print( 'battery={} should_shutdown={} power_on_time={}'.format( battery, should_shutdown, started_seen, power_on_time ) )
     return should_shutdown
 
 
