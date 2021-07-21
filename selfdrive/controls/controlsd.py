@@ -28,7 +28,7 @@ from selfdrive.hardware import HARDWARE, TICI
 
 # atom
 from selfdrive.car.hyundai.interface import CarInterface
-import common.log as  trace1
+import common.loger as  trace1
 
 
 LDW_MIN_SPEED = 31 * CV.MPH_TO_MS
