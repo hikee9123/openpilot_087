@@ -177,6 +177,7 @@ class PowerMonitoring:
 
   # See if we need to shutdown
   def should_shutdown(self, pandaState, offroad_timestamp, started_seen):
+    print( 'offroad_timestamp={} pandaState={} started_seen={}'.format( offroad_timestamp, pandaState, started_seen ) )
     if pandaState is None or offroad_timestamp is None:
       return False
 
