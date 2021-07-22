@@ -34,7 +34,6 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
     const char* gitcommit = "/data/openpilot/selfdrive/assets/addon/sh/gitcommit.sh";
     const char* gitpull = "/data/openpilot/selfdrive/assets/addon/sh/gitpull.sh";
 
-    
 
     std::system( gitcommit );
     std::system("date '+%F %T' > /data/params/d/LastUpdateTime");
