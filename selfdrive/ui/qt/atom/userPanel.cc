@@ -50,6 +50,7 @@ CUserPanel::CUserPanel(QWidget* parent) : QFrame(parent)
     }
     if (ConfirmationDialog::confirm(desc, this)) {
       Params().putBool("PutPrebuiltOn", 0);
+      std::system( "cd /data/openpilot; rm -f prebuilt" );
       std::system( gitpull );
     }
 

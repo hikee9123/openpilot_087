@@ -129,6 +129,7 @@ def set_offroad_alert_if_changed(offroad_alert: str, show_alert: bool, extra_tex
   set_offroad_alert(offroad_alert, show_alert, extra_text)
 
 # atom
+"""
 def set_prebuilt(params):
   prebuiltfile = '/data/openpilot/prebuilt'
   prebuiltlet = params.get_bool("PutPrebuiltOn")
@@ -145,7 +146,7 @@ def set_sshlegacy_key(params):
     os.system("cp -f /data/openpilot/selfdrive/assets/addon/key/GithubSshKeys_legacy /data/params/d/GithubSshKeys; chmod 600 /data/params/d/GithubSshKeys; touch /data/public_key")
   elif os.path.isfile(sshkeyfile) and not sshkeylet:
     os.system("cp -f /data/openpilot/selfdrive/assets/addon/key/GithubSshKeys /data/params/d/GithubSshKeys; chmod 600 /data/params/d/GithubSshKeys; rm -f /data/public_key")
-
+"""
 
 
 def thermald_thread():
@@ -430,7 +431,7 @@ def thermald_thread():
         off_ts = sec_since_boot()
  
     # atom
-    set_prebuilt( params )
+    #set_prebuilt( params )
     set_sshlegacy_key( params )
 
 
