@@ -432,7 +432,7 @@ def thermald_thread():
  
     # atom
     #set_prebuilt( params )
-    set_sshlegacy_key( params )
+    #set_sshlegacy_key( params )
 
 
 
