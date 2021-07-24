@@ -189,7 +189,6 @@ class LateralPlanner():
     else:
       self.lane_change_timer += DT_MDL
 
-
     self.prev_one_blinker = one_blinker
 
     self.desire = DESIRES[self.lane_change_direction][self.lane_change_state]

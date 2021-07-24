@@ -71,6 +71,7 @@ class CarController():
 
   def lkas_active_control( self, enabled, CS, path_plan ):
     steerAngleDegAbs = abs(CS.out.steeringAngleDeg)
+    steeringTorque = abs(CS.out.steeringTorque)
     
     if CS.out.steerWarning:
       self.steerWarning_time = 200
@@ -87,7 +88,7 @@ class CarController():
       self.blinker_safety_timer = 0
     elif CS.out.leftBlinker or CS.out.rightBlinker:
       self.blinker_safety_timer += 1
-      if self.blinker_safety_timer > 10:
+      if self.blinker_safety_timer > 5 and steeringTorque > 80:
         self.steer_torque_wait_timer = 200
   
     if self.steer_torque_wait_timer:
@@ -126,7 +127,6 @@ class CarController():
       apply_steer = 0
 
     self.apply_steer_last = apply_steer
-
     sys_warning, sys_state = self.process_hud_alert( lkas_active, c )
 
 

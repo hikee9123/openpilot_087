@@ -139,8 +139,8 @@ class NaviControl():
     else:
       spdTarget = speedLimit
 
-    str_log1 = 'VD={:5.0f} SL={:5.0f} TG={:5.0f} DC={:.0f}'.format( CS.VSetDis, speedLimit, spdTarget, speedLimitDistance  )
-    trace1.printf3( '  {}'.format( str_log1 ) )
+    #str_log1 = 'VD={:5.0f} SL={:5.0f} TG={:5.0f} DC={:.0f}'.format( CS.VSetDis, speedLimit, spdTarget, speedLimitDistance  )
+    #trace1.printf3( '  {}'.format( str_log1 ) )
 
     if v_ego_kph < speedLimit:
       v_ego_kph = speedLimit

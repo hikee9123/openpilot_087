@@ -45,10 +45,15 @@ class CarState(CarStateBase):
       self.prev_acc_active = self.acc_active
       self.cruise_set_speed_kph = self.clu_Vanz
 
+
+
     set_speed_kph = self.cruise_set_speed_kph
     if not self.acc_active:
-      self.cruise_set_speed_kph = self.clu_Vanz
-      return self.clu_Vanz
+      if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
+        self.cruise_set_speed_kph = self.VSetDis
+      else:
+        self.cruise_set_speed_kph = self.clu_Vanz
+      return self.cruise_set_speed_kph
 
     if self.cruise_buttons:
       self.cruise_buttons_time += 1
@@ -58,7 +63,7 @@ class CarState(CarStateBase):
     #str_log1 = 'torg:{:5.0f} steer={:5.0f}  cruise={:.0f} VSetDis={:.0f}'.format( self.cruise_buttons, self.cruise_buttons_time , self.cruise_set_speed_kph, self.VSetDis )
     #trace1.printf3( '  {}'.format( str_log1 ) )
      
-    if self.cruise_buttons_time >= 80:
+    if self.cruise_buttons_time >= 60:
       self.cruise_set_speed_kph = self.VSetDis
 
     if self.prev_clu_CruiseSwState == self.cruise_buttons:
