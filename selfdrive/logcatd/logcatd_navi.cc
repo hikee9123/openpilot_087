@@ -167,6 +167,10 @@ int main() {
       {
         if( traffic_type && res.speedLimitDistance < 50 )
            opkr = 1000;
+      }
+      else if( strcmp( entry.tag, "GestureControl" ) == 0 )
+      {
+         opkr = 3;
       }      
       else if( opkr == 1 )
       {
@@ -183,7 +187,6 @@ int main() {
         res.tv_sec = entry.tv_sec;
         res.tv_nsec = tv_nsec;
       }
-
       else if ( opkr )
       {
          if( nDelta > opkr ) opkr = 0;
@@ -213,13 +216,13 @@ int main() {
       framed.setTrafficType( traffic_type );
 
      
-      /*
+
       if( opkr )
       {
        printf("[%ld] logcat ID(%d) - PID=%d tag=%d.[%s] \n", tv_nsec, log_msg.id(),  entry.pid,  entry.tid, entry.tag);
        printf("entry.message=[%s]\n", entry.message);
       }
-      */
+
       pm.send("liveNaviData", msg);
     }
 
@@ -238,17 +241,27 @@ int main() {
 
 /*
 MAPPY
-   111 : 우측 커브 
-   112 : 윈쪽 커브
-   113 : 굽은도로
-   118, 127 : 어린이보호구역
-   122 : 좁아지는 도로
-   124 : 과속방지턱
-   129 : 주정차
-   131 : 단속카메라(신호위반카메라)
-   165 : 구간단속
-   200 : 단속구간(고정형 이동식)
-   231 : 단속(카메라, 신호위반)
-
+    signtype
+    111 오른쪽 급커브
+    112 왼쪽 급커브
+    113 굽은도로
+    118, 127 어린이보호구역
+    122 : 좁아지는 도로
+    124 과속방지턱
+    129 : 주정차
+    131 : 단속카메라(신호위반카메라)    
+    165 : 구간단속    
+    198 차선변경금지시작
+    199 차선변경금지종료
+    129 주정차금지구간
+    123 철길건널목
+    200 : 단속구간(고정형 이동식)
+    231 : 단속(카메라, 신호위반)    
+    246 버스전용차로단속
+    247 과적단속
+    248 교통정보수집
+    249 추월금지구간
+    250 갓길단속
+    251 적재불량단속
 */
 
