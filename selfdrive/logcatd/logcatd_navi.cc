@@ -129,9 +129,9 @@ int main() {
       if( opkr && strcmp( entry.tag, "Connector" ) == 0 )
       {
          if( traffic_type && res.speedLimitDistance < 30 )
-           opkr = 4;
+           opkr = 3;
          else if( opkr == 1 )
-           opkr = 8;
+           opkr = 5;
       }     
       else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 )
       {
