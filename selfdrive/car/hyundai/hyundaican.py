@@ -11,8 +11,8 @@ def create_lkas11(packer, frame, car_fingerprint, apply_steer, steer_req,
   values = lkas11
   values["CF_Lkas_LdwsSysState"] = sys_state
   values["CF_Lkas_SysWarning"] = 3 if sys_warning else 0
-  values["CF_Lkas_LdwsLHWarning"] = left_lane_depart
-  values["CF_Lkas_LdwsRHWarning"] = right_lane_depart
+  #values["CF_Lkas_LdwsLHWarning"] = left_lane_depart
+  #values["CF_Lkas_LdwsRHWarning"] = right_lane_depart
   values["CR_Lkas_StrToqReq"] = apply_steer
   values["CF_Lkas_ActToi"] = steer_req
   values["CF_Lkas_MsgCount"] = frame % 0x10
@@ -147,3 +147,17 @@ def create_frt_radar_opt(packer):
     "CF_FCA_Equip_Front_Radar": 1,
   }
   return packer.make_can_msg("FRT_RADAR11", 0, frt_radar11_values)
+
+def create_mdps12(packer, frame, mdps12):
+  #values = copy.deepcopy( mdps12 )
+  values = mdps12
+  values["CF_Mdps_ToiActive"] = 0
+  values["CF_Mdps_ToiUnavail"] = 1
+  values["CF_Mdps_MsgCount2"] = frame % 0x100
+  values["CF_Mdps_Chksum2"] = 0
+
+  dat = packer.make_can_msg("MDPS12", 2, values)[2]
+  checksum = sum(dat) % 256
+  values["CF_Mdps_Chksum2"] = checksum
+
+  return packer.make_can_msg("MDPS12", 2, values)
