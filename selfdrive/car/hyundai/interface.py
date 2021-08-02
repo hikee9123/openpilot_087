@@ -17,7 +17,7 @@ class CarInterface(CarInterfaceBase):
 
     ret.carName = "hyundai"
     ret.safetyModel = car.CarParams.SafetyModel.hyundai
-    ret.radarOffCan = True
+    ret.radarOffCan = False
 
     # Most Hyundai car ports are community features for now
     ret.communityFeature = candidate not in [CAR.SONATA, CAR.PALISADE]
@@ -29,7 +29,44 @@ class CarInterface(CarInterfaceBase):
 
     ret.startAccel = 1.0
 
-    if candidate == CAR.SANTA_FE:
+
+    if candidate == CAR.GRANDEUR_HEV_19:
+      ret.mass = 1675. + STD_CARGO_KG
+      ret.wheelbase = 2.845
+      ret.steerRatio = 16.5  #13.96   #12.5
+      ret.steerMaxBP = [1.,5.]
+      ret.steerMaxV = [0.3,1.0]
+      ret.steerRateCost = 1.2
+
+      ret.lateralTuning.pid.kf = 0.000005
+      ret.lateralTuning.pid.kpBP, ret.lateralTuning.pid.kpV = [[0.], [0.20]]
+      ret.lateralTuning.pid.kiBP, ret.lateralTuning.pid.kiV = [[0.], [0.02]]
+      ret.minSteerSpeed = 1 * CV.KPH_TO_MS
+
+      
+      ret.lateralTuning.init('lqr')
+      ret.lateralTuning.lqr.scale = 1700.0
+      ret.lateralTuning.lqr.ki = 0.01
+      ret.lateralTuning.lqr.dcGain = 0.0029   # 0.002237852961363602
+
+      ret.lateralTuning.lqr.a = [0., 1., -0.22619643, 1.21822268]
+      ret.lateralTuning.lqr.b = [-1.92006585e-04, 3.95603032e-05]
+      ret.lateralTuning.lqr.c = [1., 0.]
+      ret.lateralTuning.lqr.k = [-110., 451.]
+      ret.lateralTuning.lqr.l = [0.33, 0.318]
+
+      """
+      ret.lateralTuning.init('indi')
+      ret.lateralTuning.indi.innerLoopGainBP = [0.]
+      ret.lateralTuning.indi.innerLoopGainV = [3.5]
+      ret.lateralTuning.indi.outerLoopGainBP = [0.]
+      ret.lateralTuning.indi.outerLoopGainV = [2.0]
+      ret.lateralTuning.indi.timeConstantBP = [0.]
+      ret.lateralTuning.indi.timeConstantV = [1.4]               # 2. 중앙 조정
+      ret.lateralTuning.indi.actuatorEffectivenessBP = [0.]
+      ret.lateralTuning.indi.actuatorEffectivenessV = [3.3]      # 1. 낮을수록 코너를 잘돔.  (직진 와리 가리 조정)
+      """
+    elif candidate == CAR.SANTA_FE:
       ret.lateralTuning.pid.kf = 0.00005
       ret.mass = 3982. * CV.LB_TO_KG + STD_CARGO_KG
       ret.wheelbase = 2.766
@@ -232,9 +269,10 @@ class CarInterface(CarInterfaceBase):
     # these cars require a special panda safety mode due to missing counters and checksums in the messages
     if candidate in [CAR.HYUNDAI_GENESIS, CAR.IONIQ_EV_2020, CAR.IONIQ_EV_LTD, CAR.IONIQ_PHEV, CAR.IONIQ, CAR.KONA_EV, CAR.KIA_SORENTO,
                      CAR.SONATA_LF, CAR.KIA_NIRO_EV, CAR.KIA_OPTIMA, CAR.VELOSTER, CAR.KIA_STINGER, CAR.KIA_SELTOS,
-                     CAR.GENESIS_G70, CAR.GENESIS_G80, CAR.KIA_CEED, CAR.ELANTRA]:
+                     CAR.GENESIS_G70, CAR.GENESIS_G80, CAR.KIA_CEED, CAR.ELANTRA, CAR.GRANDEUR_HEV_19]:
       ret.safetyModel = car.CarParams.SafetyModel.hyundaiLegacy
-
+      ret.safetyModel = car.CarParams.SafetyModel.hyundaiCommunity
+    
     # set appropriate safety param for gas signal
     if candidate in HYBRID_CAR:
       ret.safetyParam = 2
@@ -280,8 +318,7 @@ class CarInterface(CarInterfaceBase):
     return self.CS.out
 
   def apply(self, c):
-    can_sends = self.CC.update(c.enabled, self.CS, self.frame, c.actuators,
-                               c.cruiseControl.cancel, c.hudControl.visualAlert, c.hudControl.leftLaneVisible,
-                               c.hudControl.rightLaneVisible, c.hudControl.leftLaneDepart, c.hudControl.rightLaneDepart)
+    can_sends = self.CC.update( c, self.CS, self.frame )
+
     self.frame += 1
     return can_sends
