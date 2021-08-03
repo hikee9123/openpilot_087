@@ -48,7 +48,7 @@ MAPPY
     switch( nsignal_type )
     {
       case  131:
-      case  165:
+      case  248:
       case  200:
       case  231:
             ret_code = 1;
