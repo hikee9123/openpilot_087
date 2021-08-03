@@ -169,10 +169,11 @@ static void ui_draw_debug1(UIState *s)
  
   nvgFontSize(s->vg, 36);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
-
+  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+  
   ui_print(s, 0, 30, scene.alert.alertTextMsg1.c_str()  );
-  ui_print(s, 0, 1000, scene.alert.alertTextMsg2.c_str() );
-  ui_print(s, 0, 1030, scene.alert.alertTextMsg3.c_str() );
+  ui_print(s, 0, 990, scene.alert.alertTextMsg2.c_str() );
+  ui_print(s, 0, 1020, scene.alert.alertTextMsg3.c_str() );
 }
 
 
