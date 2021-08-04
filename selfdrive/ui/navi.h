@@ -69,7 +69,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
       if( speedLimitAheadDistance >= 1000 )
         sprintf(szSLD,"%.1fkm", speedLimitAheadDistance * 0.001 );
       else
-        sprintf(szSLD,"%.0fm", speedLimitAheadDistance );
+        sprintf(szSLD,"%.0f", speedLimitAheadDistance );
 
       int txt_size = int(img_size*0.8);
       int txt_xpos = img_xpos + 20;  
