@@ -91,23 +91,6 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
 
 
-  /*
-   111 : 우측 커브 
-   112 : 윈쪽 커브
-   113 : 굽은도로
-   118, 127 : 어린이보호구역
-   122 : 좁아지는 도로
-   124 : 과속방지턱
-   129 : 주정차
-   195 : 가변단속구간.
-
-   131 : 단속카메라(신호위반카메라)
-   165 : 구간단속
-   200 : 단속구간(고정형 이동식)
-   231 : 단속(카메라, 신호위반)
-   248 : 교통정보수집
-*/
-
 
 
     if( nTrafficSign == 131 ) szSign = "신호위반";
@@ -131,17 +114,21 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
       if( nTrafficSign == 111 ) szSign = "우측커브";
       else if( nTrafficSign == 112 ) szSign = "좌측커브";
-      else if( nTrafficSign == 124 ) szSign = "방지턱";
-      else if( nTrafficSign == 129 ) szSign = "주정차";
-      else if( nTrafficSign == 118 ) szSign = "어린이";
-      else if( nTrafficSign == 127 ) szSign = "어린이";
-      else if( nTrafficSign == 122 ) szSign = "좁아지는";
+      else if( nTrafficSign == 123 ) szSign = "철길건널목";
+      else if( nTrafficSign == 124 ) szSign = "과속방지턱";
+      else if( nTrafficSign == 129 ) szSign = "주정차금지";
+      else if( nTrafficSign == 118 ) szSign = "어린이보호";
+      else if( nTrafficSign == 127 ) szSign = "어린이보호";
+      else if( nTrafficSign == 122 ) szSign = "좁아지는도로";
+      else if( nTrafficSign == 246 ) szSign = "버스전용차로";
+      else if( nTrafficSign == 249 ) szSign = "추월금지구간";
+      else if( nTrafficSign == 250 ) szSign = "갓길단속";
       else {
         nFontSize = 73;
         szSign = szSignal;
       }
       sprintf(szSignal,"%d", nTrafficSign );
-      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.65), szSign, nFontSize, COLOR_WHITE, "sans-bold"); 
+      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.5), szSign, nFontSize, COLOR_WHITE, "sans-bold"); 
     }
 
 }
@@ -174,7 +161,10 @@ static void ui_draw_debug1(UIState *s)
   nvgFontSize(s->vg, 36);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  
+
+  const Rect rect = {bdr_s, 990, 1700, 1020};
+  ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);  
+
   ui_print(s, 0, 30, scene.alert.alertTextMsg1.c_str()  );
   ui_print(s, 0, 990, scene.alert.alertTextMsg2.c_str() );
   ui_print(s, 0, 1020, scene.alert.alertTextMsg3.c_str() );
