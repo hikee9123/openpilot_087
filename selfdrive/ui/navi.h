@@ -160,14 +160,14 @@ static void ui_draw_debug1(UIState *s)
  
   nvgFontSize(s->vg, 36);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  
+  const Rect rect = {bdr_s, 900, 1700, 1010};
+  ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);  
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
 
-  const Rect rect = {bdr_s, 990, 1700, 1020};
-  ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);  
-
   ui_print(s, 0, 30, scene.alert.alertTextMsg1.c_str()  );
-  ui_print(s, 0, 990, scene.alert.alertTextMsg2.c_str() );
-  ui_print(s, 0, 1020, scene.alert.alertTextMsg3.c_str() );
+  ui_print(s, 0, 980, scene.alert.alertTextMsg2.c_str() );
+  ui_print(s, 0, 1010, scene.alert.alertTextMsg3.c_str() );
 }
 
 
