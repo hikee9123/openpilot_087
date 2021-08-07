@@ -129,7 +129,7 @@ class NaviControl():
       dRel = 150
       vRel = 0
 
-    dRelTarget = interp( CS.clu_Vanz, [30, 90], [ 5, 70 ] )
+    dRelTarget = 70 #interp( CS.clu_Vanz, [30, 90], [ 30, 70 ] )
     if dRel < dRelTarget and CS.clu_Vanz > 10:
       dGap = interp( CS.clu_Vanz, [30, 40, 90], [ 20, 10, 5 ] )
       cruise_set_speed_kph = CS.clu_Vanz + dGap
