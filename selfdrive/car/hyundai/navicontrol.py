@@ -10,7 +10,7 @@ from common.numpy_fast import clip, interp
 import cereal.messaging as messaging
 
 import common.loger as trace1
-
+import common.MoveAvg as mvAvg
 
 
 
@@ -19,13 +19,15 @@ class NaviControl():
   def __init__(self, p = None ):
     self.p = p
     
-    self.sm = messaging.SubMaster(['liveNaviData','lateralPlan']) 
+    self.sm = messaging.SubMaster(['liveNaviData','lateralPlan','radarState']) 
 
     self.btn_cnt = 0
     self.seq_command = 0
     self.target_speed = 0
     self.set_point = 0
     self.wait_timer2 = 0
+
+    self.moveAvg = mvAvg.MoveAvg()
 
 
 
@@ -115,11 +117,29 @@ class NaviControl():
 
     return btn_signal
 
+  def get_forword_car_speed( self, CS,  cruiseState_speed):
+    self.lead_0 = self.sm['radarState'].leadOne
+    self.lead_1 = self.sm['radarState'].leadTwo
+    cruise_set_speed_kph = cruiseState_speed
+
+    if self.lead_0.status:
+      dRel = self.lead_0.dRel
+      vRel = self.lead_0.vRel
+    else:
+      dRel = 150
+      vRel = 0
+
+    if dRel < 50:
+      cruise_set_speed_kph = CS.clu_Vanz + 5
+
+    cruise_set_speed_kph = self.moveAvg.get_avg(cruise_set_speed_kph, 20)
+    return  cruise_set_speed_kph
+
 
   def get_navi_speed(self, sm, CS, cruiseState_speed ):
     cruise_set_speed_kph = cruiseState_speed
     v_ego_kph = CS.out.vEgo * CV.MS_TO_KPH    
-    self.liveNaviData = sm['liveNaviData']    
+    self.liveNaviData = sm['liveNaviData']
     speedLimit = self.liveNaviData.speedLimit
     speedLimitDistance = self.liveNaviData.speedLimitDistance
     safetySign  = self.liveNaviData.safetySign
@@ -131,16 +151,15 @@ class NaviControl():
 
     elif CS.is_highway or speedLimit < 30:
       return  cruise_set_speed_kph
-    elif speedLimitDistance >= 10:
+    elif speedLimitDistance >= 50:
       if speedLimit <= 50:
         spdTarget = interp( speedLimitDistance, [20, 600], [ speedLimit, speedLimit + 50 ] )
       else:
-        spdTarget = interp( speedLimitDistance, [100, 700], [ speedLimit, speedLimit + 30 ] )
+        spdTarget = interp( speedLimitDistance, [150, 700], [ speedLimit, speedLimit + 30 ] )
     else:
       spdTarget = speedLimit
 
-    #str_log1 = 'VD={:5.0f} SL={:5.0f} TG={:5.0f} DC={:.0f}'.format( CS.VSetDis, speedLimit, spdTarget, speedLimitDistance  )
-    #trace1.printf3( '  {}'.format( str_log1 ) )
+
 
     if v_ego_kph < speedLimit:
       v_ego_kph = speedLimit
@@ -159,7 +178,13 @@ class NaviControl():
     elif CS.acc_active:
       cruiseState_speed = CS.out.cruiseState.speed * CV.MS_TO_KPH      
       kph_set_vEgo = self.get_navi_speed(  self.sm , CS, cruiseState_speed )
+      kph_fwd_speed = self.get_forword_car_speed( CS,  cruiseState_speed)
+
       self.ctrl_speed = min( cruiseState_speed, kph_set_vEgo)
+
+      #if CS.cruise_set_mode == 1:
+      if CS.out.cruiseState.gapSet == 4:
+        self.ctrl_speed = min( self.ctrl_speed, kph_fwd_speed)
       btn_signal = self.ascc_button_control( CS, self.ctrl_speed )
  
 

@@ -37,6 +37,7 @@ class CarState(CarStateBase):
     self.prev_acc_active = 0
     self.acc_active = 0
     self.cruise_set_speed_kph = 0
+    self.cruise_set_mode = 0      # 모드 설정.
 
 
   #@staticmethod
@@ -44,8 +45,6 @@ class CarState(CarStateBase):
     if self.prev_acc_active != self.acc_active:
       self.prev_acc_active = self.acc_active
       self.cruise_set_speed_kph = self.clu_Vanz
-
-
 
     set_speed_kph = self.cruise_set_speed_kph
     if not self.acc_active:
@@ -59,9 +58,7 @@ class CarState(CarStateBase):
       self.cruise_buttons_time += 1
     else:
       self.cruise_buttons_time = 0
-       
-    #str_log1 = 'torg:{:5.0f} steer={:5.0f}  cruise={:.0f} VSetDis={:.0f}'.format( self.cruise_buttons, self.cruise_buttons_time , self.cruise_set_speed_kph, self.VSetDis )
-    #trace1.printf3( '  {}'.format( str_log1 ) )
+  
      
     if self.cruise_buttons_time >= 60:
       self.cruise_set_speed_kph = self.VSetDis
@@ -70,7 +67,11 @@ class CarState(CarStateBase):
       return set_speed_kph
     self.prev_clu_CruiseSwState = self.cruise_buttons
 
-    if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
+    if self.cruise_buttons == Buttons.GAP_DIST:
+      self.cruise_set_mode += 1
+      if self.cruise_set_mode > 2:
+         self.cruise_set_mode = 0
+    elif self.cruise_buttons == Buttons.RES_ACCEL:   # up 
       set_speed_kph +=  1
     elif self.cruise_buttons == Buttons.SET_DECEL:  # dn
       set_speed_kph -=  1
@@ -129,13 +130,14 @@ class CarState(CarStateBase):
     ret.steerWarning = cp.vl["MDPS12"]["CF_Mdps_ToiUnavail"] != 0 or cp.vl["MDPS12"]["CF_Mdps_ToiFlt"] != 0
 
     # cruise state
-    self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph
-    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]  #kph
+    self.VSetDis = cp.vl["SCC11"]["VSetDis"]   # kph   크루즈 설정 속도.
+    self.clu_Vanz = cp.vl["CLU11"]["CF_Clu_Vanz"]  #kph  현재 차량의 속도.
     self.acc_active = (cp.vl["SCC12"]['ACCMode'] != 0)
     ret.vEgo = self.clu_Vanz * CV.KPH_TO_MS
     ret.cruiseState.accActive = self.acc_active
     ret.cruiseState.gapSet = cp.vl["SCC11"]['TauGapSet']
     ret.cruiseState.cruiseSwState = self.cruise_buttons
+    ret.cruiseState.modeSel = self.cruise_set_mode
     if self.CP.openpilotLongitudinalControl:
       ret.cruiseState.available = cp.vl["TCS13"]["ACCEnable"] == 0
       ret.cruiseState.enabled = cp.vl["TCS13"]["ACC_REQ"] == 1

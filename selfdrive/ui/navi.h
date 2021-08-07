@@ -128,7 +128,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
         szSign = szSignal;
       }
       sprintf(szSignal,"%d", nTrafficSign );
-      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.5), szSign, nFontSize, COLOR_WHITE, "sans-bold"); 
+      ui_text(s, img_xpos + int(img_size*0.5), img_ypos + int(img_size*0.5) + int(nFontSize*0.5), szSign, nFontSize, COLOR_WHITE, "sans-bold"); 
     }
 
 }
@@ -161,7 +161,7 @@ static void ui_draw_debug1(UIState *s)
   nvgFontSize(s->vg, 36);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   
-  const Rect rect = {bdr_s, 900, 1600, 1010};
+  const Rect rect = {bdr_s, 930, 1600, 1010};
   ui_fill_rect(s->vg, rect, COLOR_BLACK_ALPHA(100), 30.);  
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
 
