@@ -158,7 +158,7 @@ static void ui_draw_debug1(UIState *s)
 {
   UIScene &scene = s->scene;
  
-  nvgFontSize(s->vg, 36);
+  nvgFontSize(s->vg, 38);
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   
   const Rect rect = {bdr_s, 930, 1600, 1010};
@@ -166,7 +166,7 @@ static void ui_draw_debug1(UIState *s)
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
 
   ui_print(s, 0, 30, scene.alert.alertTextMsg1.c_str()  );
-  ui_print(s, 0, 980, scene.alert.alertTextMsg2.c_str() );
+  ui_print(s, 0, 970, scene.alert.alertTextMsg2.c_str() );
   ui_print(s, 0, 1010, scene.alert.alertTextMsg3.c_str() );
 }
 
