@@ -152,7 +152,7 @@ class CarController():
     str_log1 = 'LKAS={:.0f} torg={:5.0f} {:5.0f}'.format( CS.lkas_button_on,  apply_steer, CS.out.steeringTorque  )
     trace1.printf2( '{}'.format( str_log1 ) )
 
-    str_log1 = 'MODE={:.0f} GAP={:0.f} TA={:0.1f} '.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet,  self.steer_timer_apply_torque  )
+    str_log1 = 'MODE={:.0f} GAP={:.0f} TA={:.1f} '.format( CS.cruise_set_mode, CS.out.cruiseState.gapSet,  self.steer_timer_apply_torque  )
     trace1.printf3( '{}'.format( str_log1 ) )
 
 
