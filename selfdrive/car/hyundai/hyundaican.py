@@ -76,6 +76,14 @@ def create_lfahda_mfc(packer, enabled, hda_set_speed=0):
   }
   return packer.make_can_msg("LFAHDA_MFC", 0, values)
 
+def create_hda_mfc(packer, active):
+  values = {
+    "HDA_USM": 2,
+    "HDA_Active": 1 if active > 0 else 0,
+    "HDA_Icon_State": 2 if active > 0 else 0,
+  }
+  return packer.make_can_msg("LFAHDA_MFC", 0, values)
+
 def create_acc_commands(packer, enabled, accel, idx, lead_visible, set_speed, stopping):
   commands = []
 

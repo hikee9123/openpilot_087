@@ -1,8 +1,8 @@
 from cereal import car, log
 from common.realtime import DT_CTRL
 from selfdrive.car import apply_std_steer_torque_limits
-from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfahda_mfc, create_mdps12
-from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR
+from selfdrive.car.hyundai.hyundaican import create_lkas11, create_clu11, create_lfahda_mfc, create_mdps12, create_hda_mfc
+from selfdrive.car.hyundai.values import Buttons, CarControllerParams, CAR, FEATURES
 from opendbc.can.packer import CANPacker
 
 from selfdrive.car.hyundai.navicontrol  import NaviControl
@@ -197,9 +197,13 @@ class CarController():
         self.resume_cnt = 0
 
     # 20 Hz LFA MFA message
-    if frame % 5 == 0 and self.car_fingerprint in [CAR.SONATA, CAR.PALISADE, CAR.IONIQ, CAR.KIA_NIRO_EV, CAR.KONA_EV,
-                                                   CAR.IONIQ_EV_2020, CAR.IONIQ_PHEV, CAR.KIA_CEED, CAR.KIA_SELTOS, CAR.ELANTRA_2021, CAR.ELANTRA_HEV_2021]:
-      can_sends.append(create_lfahda_mfc(self.packer, enabled))
+    if frame % 5 == 0:
+      if self.car_fingerprint in FEATURES["send_lfa_mfa"]:
+        can_sends.append(create_lfahda_mfc(self.packer, enabled))
+      else:
+        activated_hda = CS.is_highway
+        # activated_hda: 0 - off, 1 - main road, 2 - highway
+        can_sends.append(create_hda_mfc(self.packer, activated_hda))
 
     self.lkas11_cnt += 1
     return can_sends
