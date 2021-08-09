@@ -31,7 +31,7 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 {
     const char *traffic_sign = NULL;
     const char *name_sped[] = {"speed_var","traf_turn", "img_space","speed_30","speed_40","speed_50","speed_60","speed_70","speed_80","speed_90","speed_100","speed_110"};
-
+    const char *name_sign[] = {"speed_bump", "bus_only"};
 
     const char  *szSign = NULL;
 
@@ -39,6 +39,8 @@ static void ui_draw_traffic_sign(UIState *s, float map_sign, float speedLimit,  
 
     if( nTrafficSign == 113 ) traffic_sign = name_sped[1];  // 굽은도로
     else if( nTrafficSign == 195 ) traffic_sign = name_sped[0];  // 가변 단속. ( by opkr)
+    else if( nTrafficSign == 246 ) traffic_sign = name_sign[1];  // 버스전용차로단속
+    else if( nTrafficSign == 124 ) traffic_sign = name_sign[0];  // 과속방지턱
     else if( speedLimit <= 10 )  traffic_sign = NULL;
     else if( speedLimit <= 30 )  traffic_sign = name_sped[3];
     else if( speedLimit <= 40 )  traffic_sign = name_sped[4];
