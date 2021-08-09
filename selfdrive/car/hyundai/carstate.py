@@ -52,6 +52,13 @@ class CarState(CarStateBase):
         self.cruise_set_speed_kph = self.VSetDis
       else:
         self.cruise_set_speed_kph = self.clu_Vanz
+
+      if self.prev_clu_CruiseSwState != self.cruise_buttons:
+        self.prev_clu_CruiseSwState = self.cruise_buttons
+        if self.cruise_buttons == Buttons.GAP_DIST:
+          self.cruise_set_mode += 1
+          if self.cruise_set_mode > 2:
+            self.cruise_set_mode = 0
       return self.cruise_set_speed_kph
 
     if self.cruise_buttons:
@@ -67,11 +74,7 @@ class CarState(CarStateBase):
       return set_speed_kph
     self.prev_clu_CruiseSwState = self.cruise_buttons
 
-    if self.cruise_buttons == Buttons.GAP_DIST:
-      self.cruise_set_mode += 1
-      if self.cruise_set_mode > 2:
-         self.cruise_set_mode = 0
-    elif self.cruise_buttons == Buttons.RES_ACCEL:   # up 
+    if self.cruise_buttons == Buttons.RES_ACCEL:   # up 
       set_speed_kph +=  1
     elif self.cruise_buttons == Buttons.SET_DECEL:  # dn
       set_speed_kph -=  1
