@@ -24,7 +24,7 @@ typedef struct LiveNaviDataResult {
 } LiveNaviDataResult;
 
 
-int traffic_camera( int nsignal_type )
+int traffic_camera( int nsignal_type, float fDistance )
 {
     int ret_code = 0;
 
@@ -34,6 +34,10 @@ int traffic_camera( int nsignal_type )
       case  248:  // 교통정보수집
       case  200:  // 단속구간(고정형 이동식)
       case  231:  // 단속(카메라, 신호위반)
+            ret_code = 1;
+            break;
+      case  165 :  // 구간단속
+            if fDistance < 800:
             ret_code = 1;
             break;
     } 
@@ -107,7 +111,7 @@ int main() {
      nDelta = entry.tv_sec - res.tv_sec;
 
 
-      traffic_type = traffic_camera( res.safetySign );
+      traffic_type = traffic_camera( res.safetySign, res.speedLimitDistance );
 
       if( opkr && strcmp( entry.tag, "Connector" ) == 0 )
       {
