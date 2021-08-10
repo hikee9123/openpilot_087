@@ -38,7 +38,7 @@ int traffic_camera( int nsignal_type, float fDistance )
             break;
       case  165 :  // 구간단속
             if fDistance < 800:
-            ret_code = 1;
+               ret_code = 1;
             break;
     } 
 
