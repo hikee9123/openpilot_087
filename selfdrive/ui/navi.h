@@ -153,7 +153,7 @@ static void ui_draw_navi(UIState *s)
   float speedLimit =  scene.liveNaviData.getSpeedLimit();  
   float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
   float map_sign = scene.liveNaviData.getSafetySign();
-  int  mapValid = scene.liveNaviData.getMapValid();
+  int   mapValid = scene.liveNaviData.getMapValid();
 
 
    float dSec = scene.liveNaviData.getArrivalSec();
@@ -165,7 +165,7 @@ static void ui_draw_navi(UIState *s)
 
   int xpos = 300;
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  ui_print(s, xpos, 50, "AS:%.1f", dSec  );
+  ui_print(s, xpos,  50, "AS:%.1f", dSec  );
   ui_print(s, xpos, 100, "AD:%.1f", dDistance  );
 }
 
