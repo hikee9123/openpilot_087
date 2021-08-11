@@ -164,6 +164,7 @@ static void ui_draw_navi(UIState *s)
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 
   int xpos = 300;
+  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   ui_print(s, xpos, 50, "AS:%.1f", dSec  );
   ui_print(s, xpos, 100, "AD:%.1f", dDistance  );
 }
