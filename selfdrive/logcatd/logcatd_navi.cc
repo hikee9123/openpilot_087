@@ -65,7 +65,10 @@ float arrival_time( float fDistance, float fSpeed_ms )
 {
    float  farrivalTime = 0.0;
 
-   farrivalTime = fDistance / fSpeed_ms;
+   if( fSpeed_ms )
+    farrivalTime = fDistance / fSpeed_ms;
+  else
+    farrivalTime = fDistance;
    return farrivalTime;
 }
 
@@ -185,12 +188,12 @@ int main() {
       else if( strcmp( entry.tag, "opkrturninfo" ) == 0 )
       {
         event.turnInfo = atoi( entry.message );
-        event.dHideTimeSec =  dCurTime + 3;
+        //event.dHideTimeSec =  dCurTime + 3;
       } 
       else if( strcmp( entry.tag, "opkrdistancetoturn" ) == 0 )
       {
         event.distanceToTurn = atoi( entry.message );
-        event.dHideTimeSec =  dCurTime + 3;
+        //event.dHideTimeSec =  dCurTime + 3;
       }      
 
 
@@ -206,7 +209,7 @@ int main() {
       }
       else
       {
-        event.dHideTimeSec = dCurTime + 2;
+        event.dHideTimeSec = dCurTime + 3;
       }
 
 
