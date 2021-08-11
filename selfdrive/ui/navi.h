@@ -164,8 +164,8 @@ static void ui_draw_navi(UIState *s)
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 
 
-  ui_print(s, 100, 150, "AV:%.1f", dSec  );
-  ui_print(s, 100, 200, "DT:%.1f", dDistance  );
+  ui_print(s, 100, 150, "AS:%.1f", dSec  );
+  ui_print(s, 100, 200, "AD:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 

@@ -39,12 +39,13 @@ int traffic_camera( int nsignal_type, float fDistance )
       case  248:  // 교통정보수집
       case  200:  // 단속구간(고정형 이동식)
       case  231:  // 단속(카메라, 신호위반)
+        ret_code = 1;
+        break;
+
+      case  165:  // 구간단속
+        if(fDistance < 800)
             ret_code = 1;
-            break;
-      case  165 :  // 구간단속
-            if fDistance < 800:
-               ret_code = 1;
-            break;
+        break;
     } 
 
     return ret_code;
@@ -101,11 +102,10 @@ int main() {
   setpriority(PRIO_PROCESS, 0, -15);
   long  nDelta = 0;
   long  nLastTime = 0, nDelta2 = 0;
-  long  nDelta_msec = 0;
   int   traffic_type;
   int     opkr =0;
   long    tv_msec;
-
+  float   dSpeed_kph;
   double  dCurTime;
 
 
@@ -132,7 +132,7 @@ int main() {
       
       sm.update(0);
       const float dSpeed_ms = sm["carState"].getCarState().getVEgo();
-      const float dSpeed_kph = dSpeed_ms * 3.5;
+
   
       log_msg log_msg;
       int err = android_logger_list_read(logger_list, &log_msg);
@@ -141,6 +141,8 @@ int main() {
       AndroidLogEntry entry;
       err = android_log_processLogBuffer(&log_msg.entry_v1, &entry);
       if (err < 0) continue;
+
+      dSpeed_kph = dSpeed_ms * 3.5;
 
       last_log_time.tv_sec = entry.tv_sec;
       last_log_time.tv_nsec = entry.tv_nsec;
