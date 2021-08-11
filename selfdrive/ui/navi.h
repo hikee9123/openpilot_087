@@ -163,9 +163,9 @@ static void ui_draw_navi(UIState *s)
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
 
-
-  ui_print(s, 100, 150, "AS:%.1f", dSec  );
-  ui_print(s, 100, 200, "AD:%.1f", dDistance  );
+  int xpos = 400;
+  ui_print(s, xpos, 50, "AS:%.1f", dSec  );
+  ui_print(s, xpos, 100, "AD:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 
