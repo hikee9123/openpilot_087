@@ -165,8 +165,8 @@ static void ui_draw_navi(UIState *s)
 
   int xpos = 300;
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  ui_print(s, xpos,  50, "AS:%.1f", dSec  );
-  ui_print(s, xpos, 100, "AD:%.1f", dDistance  );
+  ui_print(s, xpos, 300, "AS:%.1f", dSec  );
+  ui_print(s, xpos, 350, "AD:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 
