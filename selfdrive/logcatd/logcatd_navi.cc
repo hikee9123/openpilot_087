@@ -20,8 +20,8 @@ typedef struct LiveNaviDataResult {
       bool  mapValid;    // bool;
       int   mapEnable;    // bool;
 
-      float  dArrivalDistance;    // unit:  M
-      float  dArrivalTimeSec;    // unit: sec
+      double  dArrivalDistance;    // unit:  M
+      double  dArrivalTimeSec;    // unit: sec
       double  dEventSec;
       double  dHideTimeSec;
 
@@ -167,7 +167,7 @@ int main() {
         event.speedLimitDistance = atoi( entry.message );
         opkr = 1;
         event.dEventSec = dCurTime;  
-        update_event( &event, dSpeed_ms );
+      //  update_event( &event, dSpeed_ms );
       }      
       else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 ) // 2
       {
@@ -199,21 +199,20 @@ int main() {
       }
 
 
-      if ( opkr )
-         event.mapValid = 1;
-      else
-         event.mapValid = 0;   
-
+      
 
       // 3. Message hide process.
       if( opkr )
       {
-        event.dArrivalTimeSec =  event.dHideTimeSec - dCurTime;
-        event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
-        if( event.dArrivalTimeSec <= 0 )
+        if( dSpeed_ms )
         {
-          opkr = 0;
-        }          
+          event.dArrivalTimeSec =  event.dHideTimeSec - dCurTime;
+          event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
+          if( event.dArrivalTimeSec <= 0 )
+          {
+             opkr = 0;
+          }
+        }       
       }
       else
       {
@@ -221,6 +220,10 @@ int main() {
       }
 
 
+      if ( opkr )
+         event.mapValid = 1;
+      else
+         event.mapValid = 0;   
 
 
       
