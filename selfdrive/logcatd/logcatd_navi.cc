@@ -22,7 +22,7 @@ typedef struct LiveNaviDataResult {
 
       float  dArrivalDistance;    // unit:  M
       float  dArrivalTimeSec;    // unit: sec
-      float  dEventSec;
+      double  dEventSec;
       double  dHideTimeSec;
 
       long  tv_sec;
@@ -196,7 +196,13 @@ int main() {
       {
         event.distanceToTurn = atoi( entry.message );
         //event.dHideTimeSec =  dCurTime + 3;
-      }      
+      }
+
+
+      if ( opkr )
+         event.mapValid = 1;
+      else
+         event.mapValid = 0;   
 
 
       // 3. Message hide process.
@@ -217,10 +223,7 @@ int main() {
 
 
 
-      if ( opkr )
-         event.mapValid = 1;
-      else
-         event.mapValid = 0;
+      
 
       MessageBuilder msg;
       auto framed = msg.initEvent().initLiveNaviData();
