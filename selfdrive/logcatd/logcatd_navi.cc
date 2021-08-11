@@ -247,7 +247,7 @@ int main() {
       if( opkr )
       {
        printf("[%.1f]sec logcat ID(%d) - PID=%d tag=%d.[%s] \n", dCurTime, log_msg.id(),  entry.pid,  entry.tid, entry.tag);
-       printf("entry.message=[%s]   sec=[%.1f]sec dist=[%.1f]m\n", entry.message, event.dArrivalTimeSec, event.dArrivalDistance);
+       printf("entry.message=[%s]   sec=[%.1f]sec dist=[%.1f]m  [%.1f]\n", entry.message, event.dArrivalTimeSec, event.dArrivalDistance, dSpeed_ms );
       }
 
       pm.send("liveNaviData", msg);
