@@ -162,7 +162,9 @@ static void ui_draw_navi(UIState *s)
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
-
+  
+  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+  nvgFontSize(s->vg, 48);
   int xpos = 300;
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   ui_print(s, xpos, 300, "AS:%.1f", dSec  );
