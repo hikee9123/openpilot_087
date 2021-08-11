@@ -166,9 +166,10 @@ static void ui_draw_navi(UIState *s)
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 48);
   int xpos = 300;
+  int ypos = 300;
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  ui_print(s, xpos, 300, "AS:%.1f", dSec  );
-  ui_print(s, xpos, 350, "AD:%.1f", dDistance  );
+  ui_print(s, xpos, ypos, "AS:%.1f", dSec  );
+  ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 
