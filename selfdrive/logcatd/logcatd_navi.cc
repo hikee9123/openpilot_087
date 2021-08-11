@@ -166,6 +166,8 @@ int main() {
       {
         event.speedLimitDistance = atoi( entry.message );
         opkr = 1;
+        event.dEventSec = dCurTime;  
+        update_event( &event, dSpeed_ms );
       }      
       else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 ) // 2
       {
