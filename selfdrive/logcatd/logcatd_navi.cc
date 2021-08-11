@@ -81,8 +81,6 @@ void update_event(  LiveNaviDataResult *pEvet, float  dSpeed_ms )
         dEventDistance = 100;
     }
 
-
-
     if( dEventDistance > 10 )
     {
       dArrivalSec = arrival_time( dEventDistance, dSpeed_ms );
@@ -95,12 +93,10 @@ void update_event(  LiveNaviDataResult *pEvet, float  dSpeed_ms )
     {
       pEvet->dHideTimeSec =  pEvet->dEventSec + 3;
     }
-
 }
 
 int main() {
   setpriority(PRIO_PROCESS, 0, -15);
-  long  nDelta = 0;
   long  nLastTime = 0, nDelta2 = 0;
   int   traffic_type;
   int     opkr =0;
