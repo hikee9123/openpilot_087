@@ -19,8 +19,13 @@ typedef struct LiveNaviDataResult {
       int   distanceToTurn;    // Int32;      
       bool  mapValid;    // bool;
       int   mapEnable;    // bool;
+
+      float  dArrivalDistance;    // unit:  M
+      float  dArrivalTimeSec;    // unit: sec
+      float  dEventSec;
+      double  dHideTimeSec;
+
       long  tv_sec;
-      long  tv_nsec;
 } LiveNaviDataResult;
 
 
@@ -45,20 +50,69 @@ int traffic_camera( int nsignal_type, float fDistance )
     return ret_code;
 }
 
+long  nsec2msec( AndroidLogEntry entry )
+{
+    long msec;
+
+    double  tv_msec2 = entry.tv_nsec / 1000000;
+    msec =  entry.tv_sec * 1000ULL + long(tv_msec2);
+    return msec;
+}
+
+// return sec
+float arrival_time( float fDistance, float fSpeed_ms )
+{
+   float  farrivalTime = 0.0;
+
+   farrivalTime = fDistance / fSpeed_ms;
+   return farrivalTime;
+}
+
+
+void update_event(  LiveNaviDataResult *pEvet, float  dSpeed_ms )
+{
+    float  dEventDistance = pEvet->speedLimitDistance;
+    float  dArrivalSec;
+
+    if( dEventDistance > 10 ) {}
+    else if(  pEvet->safetySign == 124 ) // 과속방지턱
+    {
+        dEventDistance = 100;
+    }
+
+
+
+    if( dEventDistance > 10 )
+    {
+      dArrivalSec = arrival_time( dEventDistance, dSpeed_ms );
+      pEvet->dHideTimeSec = pEvet->dEventSec + dArrivalSec;
+
+      pEvet->dArrivalTimeSec =  dArrivalSec;
+      pEvet->dArrivalDistance =  dEventDistance;
+    }
+    else
+    {
+      pEvet->dHideTimeSec =  pEvet->dEventSec + 3;
+    }
+
+}
+
 int main() {
   setpriority(PRIO_PROCESS, 0, -15);
-   long  nDelta = 0;
-   long  nLastTime = 0, nDelta2 = 0;
-   long  nDelta_nsec = 0;
-   int   traffic_type;
+  long  nDelta = 0;
+  long  nLastTime = 0, nDelta2 = 0;
+  long  nDelta_msec = 0;
+  int   traffic_type;
   int     opkr =0;
-  long    tv_nsec;
-  float   tv_nsec2;
+  long    tv_msec;
+
+  double  dCurTime;
+
 
   ExitHandler do_exit;
   PubMaster pm({"liveNaviData"});
   SubMaster sm({"carState"});
-  LiveNaviDataResult  res;
+  LiveNaviDataResult  event;
 
   log_time last_log_time = {};
   logger_list *logger_list = android_logger_list_alloc(ANDROID_LOG_RDONLY | ANDROID_LOG_NONBLOCK, 0, 0);
@@ -77,7 +131,8 @@ int main() {
     while (!do_exit) {
       
       sm.update(0);
-      const float dSpeed = sm["carState"].getCarState().getVEgo() * 3.6;
+      const float dSpeed_ms = sm["carState"].getCarState().getVEgo();
+      const float dSpeed_kph = dSpeed_ms * 3.5;
   
       log_msg log_msg;
       int err = android_logger_list_read(logger_list, &log_msg);
@@ -87,127 +142,109 @@ int main() {
       err = android_log_processLogBuffer(&log_msg.entry_v1, &entry);
       if (err < 0) continue;
 
-      
-
       last_log_time.tv_sec = entry.tv_sec;
       last_log_time.tv_nsec = entry.tv_nsec;
 
-
-      tv_nsec2 = entry.tv_nsec / 1000000;
-      tv_nsec =  entry.tv_sec * 1000ULL + long(tv_nsec2);
+      // 1. Time.
+      tv_msec = nsec2msec( entry );
+      dCurTime = tv_msec * 0.001;
+      event.tv_sec = entry.tv_sec;
 
 
       nDelta2 = entry.tv_sec - nLastTime;
-      if( nDelta2 >= 1 )
+      if( nDelta2 >= 5 )
       {
         nLastTime = entry.tv_sec;
-        res.mapEnable = Params().getInt("OpkrMapEnable");
+        event.mapEnable = Params().getInt("OpkrMapEnable");
       }
       
 
-      
-     // code based from atom
-     nDelta_nsec = tv_nsec - res.tv_nsec;
-     nDelta = entry.tv_sec - res.tv_sec;
-
-
-      traffic_type = traffic_camera( res.safetySign, res.speedLimitDistance );
-
-      if( opkr && strcmp( entry.tag, "Connector" ) == 0 )
+      // 2. MAP data Event.
+      traffic_type = traffic_camera( event.safetySign, event.speedLimitDistance );
+      if( strcmp( entry.tag, "opkrspddist" ) == 0 )  // 1
       {
-         if( traffic_type && res.speedLimitDistance < 30 )
-           opkr = 3;
-         else if( opkr == 1 )
-           opkr = 5;
-      }     
-      else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 )
-      {
-        res.speedLimit = atoi( entry.message );
+        event.speedLimitDistance = atoi( entry.message );
         opkr = 1;
+      }      
+      else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 ) // 2
+      {
+        event.speedLimit = atoi( entry.message );
+        opkr = 2;
       }
-      else if( strcmp( entry.tag, "opkrspddist" ) == 0 )
+      else if( strcmp( entry.tag, "opkrcurvangle" ) == 0 )  // 3
       {
-        res.speedLimitDistance = atoi( entry.message );
-        opkr = 1;
+        event.roadCurvature = atoi( entry.message );
+        opkr = 3;
       }
-      else if( strcmp( entry.tag, "opkrsigntype" ) == 0 )
+      else if( strcmp( entry.tag, "opkrsigntype" ) == 0 )  // 4.
       {
-        res.safetySign = atoi( entry.message );
-        opkr = 1;
-      }
-      else if( strcmp( entry.tag, "opkrcurvangle" ) == 0 )  
-      {
-        res.roadCurvature = atoi( entry.message );
-        opkr = 1;
+        event.safetySign = atoi( entry.message );
+        opkr = 4;
+
+        event.dEventSec = dCurTime;  
+        update_event( &event, dSpeed_ms );
       }
       else if( strcmp( entry.tag, "opkrturninfo" ) == 0 )
       {
-        res.turnInfo = atoi( entry.message );
-        opkr = 1;
+        event.turnInfo = atoi( entry.message );
+        event.dHideTimeSec =  dCurTime + 3;
       } 
       else if( strcmp( entry.tag, "opkrdistancetoturn" ) == 0 )
       {
-        res.distanceToTurn = atoi( entry.message );
-        opkr = 1;
+        event.distanceToTurn = atoi( entry.message );
+        event.dHideTimeSec =  dCurTime + 3;
       }      
-      else if(  opkr && strcmp( entry.tag, "AudioFlinger" ) == 0 )  //   msm8974_platform
+
+
+      // 3. Message hide process.
+      if( opkr )
       {
-        if( traffic_type && res.speedLimitDistance < 50 )
-           opkr = 1000;
+        event.dArrivalTimeSec =  event.dHideTimeSec - dCurTime;
+        event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
+        if( event.dArrivalTimeSec <= 0 )
+        {
+          opkr = 0;
+        }          
       }
-      else if( strcmp( entry.tag, "GestureControl" ) == 0 )
+      else
       {
-         opkr = 3;
-      }      
-      else if( opkr == 1 )
-      {
-         opkr = 10;
+        event.dHideTimeSec = dCurTime + 2;
       }
 
-      if ( opkr == 1000 )
-      {
-        if( dSpeed < 10 && nDelta_nsec > 500 ) opkr = 0;
-        else if( nDelta_nsec > 100 ) opkr = 0;
-      }
-      else if ( opkr == 1 || dSpeed < 10  )
-      {
-        res.tv_sec = entry.tv_sec;
-        res.tv_nsec = tv_nsec;
-      }
-      else if ( opkr )
-      {
-         if( nDelta > opkr ) opkr = 0;
-      }
+
+
 
       if ( opkr )
-         res.mapValid = 1;
+         event.mapValid = 1;
       else
-         res.mapValid = 0;
+         event.mapValid = 0;
 
       MessageBuilder msg;
       auto framed = msg.initEvent().initLiveNaviData();
       framed.setId(log_msg.id());
-      framed.setTs( res.tv_sec );
-      framed.setSpeedLimit( res.speedLimit );  // Float32;
-      framed.setSpeedLimitDistance( res.speedLimitDistance );  // raw_target_speed_map_dist Float32;
-      framed.setSafetySign( res.safetySign ); // map_sign Float32;
-      framed.setRoadCurvature( res.roadCurvature ); // road_curvature Float32;
+      framed.setTs( event.tv_sec );
+      framed.setSpeedLimit( event.speedLimit );  // Float32;
+      framed.setSpeedLimitDistance( event.speedLimitDistance );  // raw_target_speed_map_dist Float32;
+      framed.setSafetySign( event.safetySign ); // map_sign Float32;
+      framed.setRoadCurvature( event.roadCurvature ); // road_curvature Float32;
 
       // Turn Info
-      framed.setTurnInfo( res.turnInfo );
-      framed.setDistanceToTurn( res.distanceToTurn );
+      framed.setTurnInfo( event.turnInfo );
+      framed.setDistanceToTurn( event.distanceToTurn );
 
-      framed.setMapEnable( res.mapEnable );
-      framed.setMapValid( res.mapValid );
-
+      framed.setMapEnable( event.mapEnable );
+      framed.setMapValid( event.mapValid );
       framed.setTrafficType( traffic_type );
+
+      framed.setArrivalSec(  event.dArrivalTimeSec );
+      framed.setArrivalDistance(  event.dArrivalDistance );
 
      
 
       if( opkr )
       {
-       printf("[%ld] logcat ID(%d) - PID=%d tag=%d.[%s] \n", tv_nsec, log_msg.id(),  entry.pid,  entry.tid, entry.tag);
-       printf("entry.message=[%s]\n", entry.message);
+       printf("[%.1f]sec logcat ID(%d) - PID=%d tag=%d.[%s] \n", dCurTime, log_msg.id(),  entry.pid,  entry.tid, entry.tag);
+       printf("entry.message=[%s]   sec=[%.1f]sec dist=[%.1f]m\n", entry.message, event.dArrivalTimeSec, event.dArrivalDistance);
       }
 
       pm.send("liveNaviData", msg);

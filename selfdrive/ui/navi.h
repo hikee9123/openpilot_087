@@ -9,8 +9,13 @@ I love OPKR code.
 */
 
 static void ui_text(const UIState *s, float x, float y, const char *string, float size, NVGcolor color, const char *font_name) {
-  nvgFontFace(s->vg, font_name);
-  nvgFontSize(s->vg, size);
+
+  if( font_name )
+  {
+    nvgFontFace(s->vg, font_name);
+    nvgFontSize(s->vg, size);
+  }
+
   nvgFillColor(s->vg, color);
   nvgText(s->vg, x, y, string, NULL);
 }
@@ -151,9 +156,16 @@ static void ui_draw_navi(UIState *s)
   int  mapValid = scene.liveNaviData.getMapValid();
 
 
+   float dSec = scene.liveNaviData.getArrivalSec();
+   float dDistance = scene.liveNaviData.getArrivalDistance();
+
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
   if( mapValid )
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
+
+
+  ui_print(s, 100, 150, "AV:%.1f", dSec  );
+  ui_print(s, 100, 200, "DT:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 

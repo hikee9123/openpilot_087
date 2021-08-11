@@ -1326,7 +1326,10 @@ struct LiveNaviData {
   trafficType @8 :Int32;
 
   turnInfo @9 :Int32;
-  distanceToTurn @10 :Int32;       
+  distanceToTurn @10 :Int32;      
+
+   arrivalSec @11 :Float32;
+   arrivalDistance @12 :Float32;
 }
 
 struct LiveMapDataDEPRECATED {
