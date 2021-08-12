@@ -145,10 +145,6 @@ static void ui_draw_navi(UIState *s)
   UIScene &scene = s->scene;
 
 
- // float  roadCurvature = scene.liveNaviData.getRoadCurvature();
- // int   opkrturninfo = scene.liveNaviData.getTurnInfo();
- //int   opkrdisttoturn = scene.liveNaviData.getDistanceToTurn();
-
  
   float speedLimit =  scene.liveNaviData.getSpeedLimit();  
   float speedLimitAheadDistance =  scene.liveNaviData.getSpeedLimitDistance();  
@@ -161,15 +157,19 @@ static void ui_draw_navi(UIState *s)
 
   //  printf("ui_draw_navi %d  %.1f  %d \n", mapValid, speedLimit, opkrturninfo);
   if( mapValid )
+  {
     ui_draw_traffic_sign( s, map_sign, speedLimit, speedLimitAheadDistance );
+
+    nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
+    nvgFontSize(s->vg, 48);
+    int xpos = 250;
+    int ypos = 300;
+    nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
+    ui_print(s, xpos, ypos, "AT:%.1f", dSec  );
+    ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
+  }
+    
   
-  nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
-  nvgFontSize(s->vg, 48);
-  int xpos = 250;
-  int ypos = 300;
-  nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
-  ui_print(s, xpos, ypos, "AS:%.1f", dSec  );
-  ui_print(s, xpos, ypos + 50, "AD:%.1f", dDistance  );
 }
 
 static void ui_draw_debug1(UIState *s) 
