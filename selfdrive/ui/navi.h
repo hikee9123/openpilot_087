@@ -165,7 +165,7 @@ static void ui_draw_navi(UIState *s)
   
   nvgTextAlign(s->vg, NVG_ALIGN_LEFT | NVG_ALIGN_BASELINE);
   nvgFontSize(s->vg, 48);
-  int xpos = 300;
+  int xpos = 250;
   int ypos = 300;
   nvgFillColor(s->vg, nvgRGBA(255, 255, 255, 255));
   ui_print(s, xpos, ypos, "AS:%.1f", dSec  );

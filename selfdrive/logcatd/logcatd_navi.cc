@@ -10,6 +10,64 @@
 #include "selfdrive/common/params.h"
 
 
+
+/*
+MAPPY
+    signtype
+    111 오른쪽 급커브
+    112 왼쪽 급커브
+    113 굽은도로
+    118, 127 어린이보호구역
+    122 : 좁아지는 도로
+    124 : 과속방지턱
+    129 : 주정차
+    131 : 단속카메라(신호위반카메라)  
+    135 : 고정식  - 호야
+    150 : 경찰차(이동식)  - 호야
+    165 : 구간단속    
+    198 차선변경금지시작
+    199 차선변경금지종료
+    129 주정차금지구간
+    123 철길건널목
+    200 : 단속구간(고정형 이동식)
+    231 : 단속(카메라, 신호위반)    
+    246 버스전용차로단속
+    247 과적단속
+    248 교통정보수집
+    249 추월금지구간
+    250 갓길단속
+    251 적재불량단속
+*/
+
+
+typedef enum TrafficSign {
+  TS_CURVE_RIGHT = 111,  // 오른쪽 급커브
+  TS_CURVE_LEFT = 112,   // 왼쪽 급커브
+  TS_BEND_ROAD = 113,    // 굽은도로
+  TS_SCHOOL_ZONE1 = 118,  // 어린이보호구역
+  TS_SCHOOL_ZONE2 = 127,  // 어린이보호구역
+  TS_NARROW_ROAD = 122,   // 좁아지는 도로
+  TS_BUMP_ROAD =  124,  // 과속방지턱
+  TS_PARK_CRACKDOWN  = 129,  // 주정차단속
+  TS_CAMERA1  = 131,  // 단속카메라(신호위반카메라)  
+  TS_CAMERA2  = 135,  // 고정식  - 호야
+  TS_CAMERA3  = 150,  // 경찰차(이동식)  - 호야
+  TS_INTERVAL  = 165,  // 구간 단속    
+  TS_LANE_CHANGE1  = 198,  // 차선변경금지시작
+  TS_ANE_CHANGE2  = 199,  // 차선변경금지종료
+  TS_PARK_ZONE  = 129,  // 주정차금지구간
+  TS_RAILROAD  = 123,  // 철길건널목
+  TS_CAMERA4  = 200,  // 단속구간(고정형 이동식)
+  TS_CAMERA5  = 231,  // 단속(카메라, 신호위반)    
+  TS_BUS_ONLY  = 246,  // 버스전용차로단속
+  TS_LOAD_OVER  = 247,  // 과적단속
+  TS_TRAFFIC_INFO  = 248,  // 교통정보수집
+  TS_OVERTRAK  = 249,  // 추월금지구간
+  TS_SHOULDER  = 250,  // 갓길단속
+  TS_LOAD_POOR  = 251,  // 적재불량단속  
+} TrafficSign;
+
+
 typedef struct LiveNaviDataResult {
       float speedLimit;  // Float32;
       float speedLimitDistance;  // Float32;
@@ -27,6 +85,8 @@ typedef struct LiveNaviDataResult {
 
       long  tv_sec;
 } LiveNaviDataResult;
+
+
 
 
 int traffic_camera( int nsignal_type, float fDistance )
@@ -81,12 +141,13 @@ void update_event(  LiveNaviDataResult *pEvet, float  dSpeed_ms )
     if( dEventDistance > 10 ) {}
     else if(  pEvet->safetySign == 124 ) // 과속방지턱
     {
-        dEventDistance = 100;
+        dEventDistance = 200;
     }
 
     if( dEventDistance > 10 )
     {
       dArrivalSec = arrival_time( dEventDistance, dSpeed_ms );
+
       pEvet->dHideTimeSec = pEvet->dEventSec + dArrivalSec;
 
       pEvet->dArrivalTimeSec =  dArrivalSec;
@@ -105,8 +166,9 @@ int main() {
   int     opkr =0;
   long    tv_msec;
   float   dSpeed_kph;
+  double   dStopSec = 1;
   double  dCurTime;
-
+  double  dEventLastSec;
 
   ExitHandler do_exit;
   PubMaster pm({"liveNaviData"});
@@ -148,7 +210,7 @@ int main() {
 
       // 1. Time.
       tv_msec = nsec2msec( entry );
-      dCurTime = tv_msec * 0.001;
+      dCurTime = tv_msec * 0.001;  // msec => sec
       event.tv_sec = entry.tv_sec;
 
 
@@ -166,7 +228,6 @@ int main() {
       {
         event.speedLimitDistance = atoi( entry.message );
         opkr = 1;
-        event.dEventSec = dCurTime;  
       //  update_event( &event, dSpeed_ms );
       }      
       else if( strcmp( entry.tag, "opkrspdlimit" ) == 0 ) // 2
@@ -183,35 +244,36 @@ int main() {
       {
         event.safetySign = atoi( entry.message );
         opkr = 4;
-
-        event.dEventSec = dCurTime;  
+        event.dEventSec = dCurTime;
         update_event( &event, dSpeed_ms );
       }
       else if( strcmp( entry.tag, "opkrturninfo" ) == 0 )
       {
         event.turnInfo = atoi( entry.message );
-        //event.dHideTimeSec =  dCurTime + 3;
       } 
       else if( strcmp( entry.tag, "opkrdistancetoturn" ) == 0 )
       {
         event.distanceToTurn = atoi( entry.message );
-        //event.dHideTimeSec =  dCurTime + 3;
       }
 
 
       
-
+      
       // 3. Message hide process.
       if( opkr )
       {
-        if( dSpeed_ms )
+        if( dSpeed_ms > 1.0 )
         {
-          event.dArrivalTimeSec =  event.dHideTimeSec - dCurTime;
+          dEventLastSec = dCurTime - event.dEventSec;  // 마지막 Event Time
+          dStopSec = event.dHideTimeSec - dCurTime;
+          event.dArrivalTimeSec = dStopSec;
           event.dArrivalDistance =  event.dArrivalTimeSec * dSpeed_ms;
-          if( event.dArrivalTimeSec <= 0 )
-          {
-             opkr = 0;
-          }
+          if( dEventLastSec > 3 )   opkr = 0;
+          else if( event.dArrivalTimeSec < 2 )  opkr = 0;
+        }
+        else
+        {
+          event.dHideTimeSec = dCurTime + dStopSec;
         }       
       }
       else
@@ -219,14 +281,10 @@ int main() {
         event.dHideTimeSec = dCurTime + 3;
       }
 
-
       if ( opkr )
          event.mapValid = 1;
       else
          event.mapValid = 0;   
-
-
-      
 
       MessageBuilder msg;
       auto framed = msg.initEvent().initLiveNaviData();
@@ -248,7 +306,6 @@ int main() {
       framed.setArrivalSec(  event.dArrivalTimeSec );
       framed.setArrivalDistance(  event.dArrivalDistance );
 
-     
 
       if( opkr )
       {
@@ -270,33 +327,4 @@ int main() {
 
   return 0;
 }
-
-
-/*
-MAPPY
-    signtype
-    111 오른쪽 급커브
-    112 왼쪽 급커브
-    113 굽은도로
-    118, 127 어린이보호구역
-    122 : 좁아지는 도로
-    124 : 과속방지턱
-    129 : 주정차
-    131 : 단속카메라(신호위반카메라)  
-    135 : 고정식  - 호야
-    150 : 경찰차(이동식)  - 호야
-    165 : 구간단속    
-    198 차선변경금지시작
-    199 차선변경금지종료
-    129 주정차금지구간
-    123 철길건널목
-    200 : 단속구간(고정형 이동식)
-    231 : 단속(카메라, 신호위반)    
-    246 버스전용차로단속
-    247 과적단속
-    248 교통정보수집
-    249 추월금지구간
-    250 갓길단속
-    251 적재불량단속
-*/
 
